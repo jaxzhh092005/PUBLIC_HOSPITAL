@@ -21,6 +21,7 @@ from nurse.views import nurse_dashboard
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('signin/', include(('signin.urls', 'signin'), namespace='signin')),
     path('nurse/', nurse_dashboard, name='nurse-dashboard'),
     path("", include("page.urls")),
 ]

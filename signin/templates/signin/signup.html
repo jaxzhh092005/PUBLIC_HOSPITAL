@@ -1,0 +1,40 @@
+{% extends "signin/base.html" %}
+{% block title %}Create account{% endblock %}
+{% block tag_href %}{% url 'signin:login' %}{% endblock %}
+
+{% block content %}
+  <h1 class="auth__title">Create your account</h1>
+  <p class="auth__subtitle">Please enter your details.</p>
+
+  {% if error %}<p class="auth__error">{{ error }}</p>{% endif %}
+
+  <form method="post" class="auth__form">
+    {% csrf_token %}
+    <div class="field">
+      <label for="first_name">First Name</label>
+      <input type="text" id="first_name" name="first_name" placeholder="enter your first name" required>
+    </div>
+
+    <div class="field">
+      <label for="last_name">Last Name</label>
+      <input type="text" id="last_name" name="last_name" placeholder="enter your last name" required>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="enter your email" aria-describedby="email-error" required>
+      <p class="auth__hint email-feedback" id="email-error" aria-live="polite"></p>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="enter your password" required>
+    </div>
+
+    <label class="check"><input type="checkbox" name="subscribe"> Subscribe</label>
+
+    <button type="submit" class="btn">Sign up</button>
+  </form>
+{% endblock %}
+
+{% block footer_left %}Already have an account? <a href="{% url 'signin:login' %}">Log in</a>{% endblock %}
