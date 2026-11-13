@@ -1,0 +1,207 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital Schedule: Find your doctor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <a class="logo" href="#" aria-label="Hospital Schedule home">
+       <img src="{% static 'images/logo.png' %}"
+         alt="Hospital Schedule Logo"
+         class="logo-img">
+
+    </a>
+    <a class="btn" href="#">SIGN UP / LOGIN</a>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-art" aria-hidden="true">
+            <span class="dot d1"></span><span class="dot d2"></span>
+            <span class="plus p1"></span><span class="plus p2"></span>
+            <div class="blob"></div>
+            <img src="{% static 'images/doctor.png' %}" alt="A smiling doctor">
+        </div>
+
+      <div class="hero-main">
+        <h1>FIND YOUR <span>DOCTOR</span></h1>
+        <p class="kicker">BOOK YOUR APPOINTMENT HERE</p>
+
+        
+    
+    <form class="search" id="specialtySearch">
+
+        <svg width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="M20 20l-4-4"/>
+        </svg>
+
+        <select id="specialty" name="specialty" required>
+            <option value="" selected disabled>
+                Select Doctor or Specialist
+            </option>
+
+            <option value="general-medicine">General Medicine</option>
+            <option value="family-medicine">Family Medicine</option>
+            <option value="neurosurgery">Neurosurgery</option>
+            <option value="neurology">Neurology</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="orthopedic-surgery">Orthopedic Surgery</option>
+            <option value="ophthalmology">Ophthalmology</option>
+            <option value="urology">Urology</option>
+        </select>
+
+    </form>
+
+<script>
+document.getElementById("specialty").addEventListener("change", function() {
+
+    const specialty = this.value;
+
+    if (specialty) {
+        window.location.href = "/doctors/" + specialty + "/";
+    }
+
+});
+</script>
+
+
+    </form>
+
+        <a class="help" href="#">Need Help?</a>
+
+        <aside class="emergency" aria-labelledby="em-title">
+          <div>
+            <p class="small" id="em-title">EMERGENCIES</p>
+            <p class="big">Looking for immediate action?</p>
+            <p class="fast">Fast Action</p>
+            <a class="btn btn-sm" href="#">CONTACT NOW</a>
+          </div>
+          <div class="em-art" aria-hidden="true">
+            <svg viewBox="0 0 120 90"><ellipse cx="60" cy="45" rx="58" ry="42" fill="#bfeae1"/><path d="M60 72C26 50 30 24 46 24c9 0 14 6 14 6s5-6 14-6c16 0 20 26-14 48z" fill="#e5484d"/><path d="M60 38v18M51 47h18" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Top specialties -->
+    <section class="section" aria-labelledby="spec-title">
+      <h2 id="spec-title">Top Specialties</h2>
+      <p class="sub">People have been looking for these specialties.</p>
+      <ul class="tiles">
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩺</span><span class="lbl">Primary care &amp; general medicine</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🌸</span><span class="lbl">Women's &amp; gender health</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧸</span><span class="lbl">Pediatrics</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes &amp; endocrinology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">👁️</span><span class="lbl">Eye &amp; vision care</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">❤️</span><span class="lbl">Heart &amp; cardiology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧴</span><span class="lbl">Skin &amp; dermatology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🫁</span><span class="lbl">Lungs, chest &amp; pulmonology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🍽️</span><span class="lbl">Digestive &amp; gastroenterology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">👂</span><span class="lbl">Ear, nose &amp; throat</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💧</span><span class="lbl">Kidney &amp; urology</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧠</span><span class="lbl">Neurology</span></a></li>
+      </ul>
+    </section>
+
+    <!-- Common conditions -->
+    <section class="section" aria-labelledby="cond-title">
+      <h2 id="cond-title">Common Conditions</h2>
+      <p class="sub">Easily access doctors treating these conditions.</p>
+      <ul class="tiles">
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">😣</span><span class="lbl">Acne &amp; skin problems</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🦴</span><span class="lbl">Arthritis</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧍</span><span class="lbl">Back pain</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🎗️</span><span class="lbl">Cancer</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💭</span><span class="lbl">Depression, anxiety &amp; mental health</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🫀</span><span class="lbl">High blood pressure &amp; hypertension</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💪</span><span class="lbl">Muscle &amp; joint pain</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🚻</span><span class="lbl">Urinary tract infection</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🌷</span><span class="lbl">PCOS</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🤱</span><span class="lbl">Breastfeeding</span></a></li>
+        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🦋</span><span class="lbl">Thyroid</span></a></li>
+      </ul>
+    </section>
+
+    <!-- Bridge the gap -->
+    <section class="section center" aria-labelledby="gap-title">
+      <h2 id="gap-title">We're bridging the gap between Doctors and Patients</h2>
+      <p class="sub">You'll never miss another Doctor's appointment!</p>
+
+      <h3 class="online">Doctors Online Now</h3>
+      <ul class="docs">
+        <li class="doc">
+          <span class="avatar" aria-hidden="true">MN</span>
+          <div><p class="name">Dr Marie Concepcion Naranja</p><p class="spec">Family medicine</p></div>
+          <a class="btn btn-sm" href="#">CONSULT NOW</a>
+        </li>
+        <li class="doc">
+          <span class="avatar" aria-hidden="true">VC</span>
+          <div><p class="name">Dr Vicente Mikhail Cano</p><p class="spec">Cardiology</p></div>
+          <a class="btn btn-sm" href="#">CONSULT NOW</a>
+        </li>
+        <li class="doc">
+          <span class="avatar" aria-hidden="true">GG</span>
+          <div><p class="name">Dr Godwin Grata</p><p class="spec">Pediatrics</p></div>
+          <a class="btn btn-sm" href="#">CONSULT NOW</a>
+        </li>
+      </ul>
+      <a class="btn btn-sm btn-more" href="doctors.html">VIEW MORE DOCTORS</a>
+    </section>
+
+    <!-- Hospitals -->
+    <section class="section" aria-labelledby="hosp-title">
+      <h2 id="hosp-title">Hospitals near you</h2>
+      <p class="sub">We have Doctors in these hospitals who are ready to serve you!</p>
+      <ul class="hospitals">
+        <li><a href="#">Quezon Medical Center</a></li>
+        <li><a href="#">Lucena MMG General Hospital</a></li>
+        <li><a href="#">Lucena United Doctors Hospital and Medical Center</a></li>
+        <li><a href="#">Mount Carmel Diocesan General Hospital</a></li>
+        <li><a href="#">St. Anne General Hospital</a></li>
+        <li><a href="#">JCE Medical Center Sariaya</a></li>
+        <li><a href="#">EMG Hospital Sariaya</a></li>
+        <li><a href="#">Gillen Mercedes Hospital</a></li>
+        <li><a href="#">Tayabas Community Hospital</a></li>
+        <li><a href="#">UnitedHealth Quezon Hospital and Medical Center</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="foot-col">
+      <h2>GENERAL</h2>
+      <ul class="foot-links">
+        <li><a href="#">ABOUT US</a></li>
+        <li><a href="#">TERMS &amp; CONDITION</a></li>
+        <li><a href="#">PRIVACY POLICY</a></li>
+        <li><a href="#">PARTNERS</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h2>SOCIAL MEDIA</h2>
+      <ul class="social">
+        <li><a class="s-fb" href="#" aria-label="Facebook">f</a></li>
+        <li><a class="s-x" href="#" aria-label="X">X</a></li>
+        <li><a class="s-ig" href="#" aria-label="Instagram">◎</a></li>
+        <li><a class="s-yt" href="#" aria-label="YouTube">▶</a></li>
+        <li><a class="s-in" href="#" aria-label="LinkedIn">in</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

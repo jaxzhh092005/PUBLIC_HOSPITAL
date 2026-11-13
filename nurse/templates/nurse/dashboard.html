@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nurse dashboard | CarePoint</title>
+    <link rel="stylesheet" href="{% static 'nurse/css/dashboard.css' %}">
+</head>
+<body>
+    <main class="dashboard">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Nurse workspace</p>
+                <h1>Welcome, {{ nurse.user.get_short_name|default:nurse.user.username }}</h1>
+                <p class="subheading">{{ nurse.hospital.name }} <span aria-hidden="true">·</span> {{ today|date:"l, F j, Y" }}</p>
+            </div>
+            <a class="button button-primary" href="#appointments">View appointments</a>
+        </header>
+
+        <section class="summary" aria-label="Appointment summary">
+            <div>
+                <p class="summary-label">Upcoming appointments</p>
+                <p class="summary-value">{{ appointments|length }}</p>
+            </div>
+            <p class="summary-note">Scheduled at your hospital</p>
+        </section>
+
+        <section id="appointments" class="appointments-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Your schedule</p>
+                    <h2>Appointments</h2>
+                </div>
+                <span class="date-chip">{{ today|date:"M j, Y" }} onward</span>
+            </div>
+
+            {% if appointments %}
+                <div class="appointment-list">
+                    {% for appointment in appointments %}
+                        <article class="appointment-card">
+                            <div class="appointment-date">
+                                <span>{{ appointment.appointment_date|date:"M" }}</span>
+                                <strong>{{ appointment.appointment_date|date:"j" }}</strong>
+                                <span>{{ appointment.appointment_time|time:"g:i A" }}</span>
+                            </div>
+
+                            <div class="appointment-main">
+                                <div class="card-title-row">
+                                    <h3>{{ appointment.patient.user.get_full_name|default:appointment.patient.user.username }}</h3>
+                                    <span class="status status-{{ appointment.status|lower }}">{{ appointment.get_status_display }}</span>
+                                </div>
+                                <p class="doctor-name">With Dr. {{ appointment.doctor.user.get_full_name|default:appointment.doctor.user.username }}</p>
+                                <details class="appointment-details">
+                                    <summary class="button button-secondary">Appointment details</summary>
+                                    <div class="details-panel">
+                                        <p><strong>Reason:</strong> {{ appointment.reason|default:"Not provided" }}</p>
+                                        <p><strong>Patient phone:</strong> {{ appointment.patient.mobile }}</p>
+                                        <a class="button button-outline" href="tel:{{ appointment.patient.mobile }}">Call patient</a>
+                                    </div>
+                                </details>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon" aria-hidden="true">✓</div>
+                    <h3>You’re all caught up</h3>
+                    <p>There are no upcoming appointments for your hospital.</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
