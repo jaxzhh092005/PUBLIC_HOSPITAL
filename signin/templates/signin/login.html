@@ -1,0 +1,33 @@
+{% extends "signin/base.html" %}
+{% block title %}Log in{% endblock %}
+{% block tag_href %}/{% endblock %}
+
+{% block content %}
+  <h1 class="auth__title">Welcome back</h1>
+  <p class="auth__subtitle">Please enter your details.</p>
+
+  {% if error %}<p class="auth__error">{{ error }}</p>{% endif %}
+
+  <form method="post" class="auth__form">
+    {% csrf_token %}
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="enter your email" aria-describedby="email-error" required>
+      <p class="auth__hint email-feedback" id="email-error" aria-live="polite"></p>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="enter your password" required>
+    </div>
+
+    <div class="auth__row">
+      <label class="check"><input type="checkbox" name="remember"> remember</label>
+      <a href="{% url 'signin:forgot_password' %}">Forgot password</a>
+    </div>
+
+    <button type="submit" class="btn">Sign in</button>
+  </form>
+{% endblock %}
+
+{% block footer_left %}Don't have an account? <a href="{% url 'signin:signup' %}">Sign up</a>{% endblock %}

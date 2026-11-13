@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'page',
     'patients',
     'nurse',
+    'signin',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,6 @@ TEMPLATES = [
         },
     },
 ]
-STATIC_URL = "static/"
 WSGI_APPLICATION = 'public_hospital_scheduling.wsgi.application'
 
 
@@ -126,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 
 # Email
