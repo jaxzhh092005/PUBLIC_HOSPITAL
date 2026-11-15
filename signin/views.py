@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate, login, logout
 
 User = get_user_model()
 
@@ -70,3 +71,7 @@ def forgot_password_view(request):
         else:
             message = "Password reset email delivery is not configured yet."
     return render(request, "signin/forgot_password.html", {"message": message})
+
+def logout_view(request):
+    logout(request)
+    return redirect("/")

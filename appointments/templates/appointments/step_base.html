@@ -1,0 +1,24 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}Schedule Your Appointment – {{ step.label }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'appointments/css/appointments.css' %}">{% endblock %}
+
+{% block content %}
+<section class="schedule-card">
+  <header class="schedule-head">
+    <h1>Schedule Your Appointment</h1>
+    <p>Select the specialty for your appointment</p>
+  </header>
+
+  {% include "appointments/_stepper.html" %}
+
+  <form method="post" class="schedule-body" novalidate>
+    {% csrf_token %}
+    {% block step_fields %}{% endblock %}
+    <div class="schedule-actions">
+      <a href="{% url back_url %}" class="btn">Back</a>
+      <button type="submit" class="btn">Next</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

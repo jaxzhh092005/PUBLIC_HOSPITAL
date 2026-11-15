@@ -1,0 +1,13 @@
+{% extends "appointments/step_base.html" %}
+
+{% block step_fields %}
+<div class="field">
+  <label for="{{ form.date.id_for_label }}">
+    {{ form.date.label }} <span class="req" aria-hidden="true">*</span>
+  </label>
+  {{ form.date }}
+  {% for error in form.date.errors %}
+    <p class="field-error" role="alert">{{ error }}</p>
+  {% endfor %}
+</div>
+{% endblock %}

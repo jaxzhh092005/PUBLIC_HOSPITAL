@@ -1,0 +1,98 @@
+{% extends "appointments/step_base.html" %}
+
+{% block step_fields %}
+<div class="form-grid">
+  {% include "appointments/_field.html" with field=form.last_name span=2 %}
+  {% include "appointments/_field.html" with field=form.first_name span=2 %}
+  {% include "appointments/_field.html" with field=form.middle_name span=2 %}
+
+  {% include "appointments/_field.html" with field=form.suffix span=2 %}
+  {% include "appointments/_field.html" with field=form.birthdate span=2 %}
+  {% include "appointments/_field.html" with field=form.gender span=2 %}
+
+  {% include "appointments/_field.html" with field=form.email span=3 %}
+  {% include "appointments/_field.html" with field=form.contact_number span=3 %}
+
+  <div class="span-6 form-gap" aria-hidden="true"></div>
+
+  {% include "appointments/_field.html" with field=form.region span=3 %}
+  {% include "appointments/_field.html" with field=form.province span=3 %}
+  {% include "appointments/_field.html" with field=form.municipality span=3 %}
+  {% include "appointments/_field.html" with field=form.barangay span=3 %}
+  {% include "appointments/_field.html" with field=form.street span=6 %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Region > Province > Municipality, loaded from the public PSGC API.
+  const API = "https://psgc.gitlab.io/api";
+  const saved = {
+    region: "{{ form.region.value|default:''|escapejs }}",
+    province: "{{ form.province.value|default:''|escapejs }}",
+    municipality: "{{ form.municipality.value|default:''|escapejs }}",
+  };
+  const $ = (id) => document.getElementById(id);
+  const regionSel = $("{{ form.region.id_for_label }}");
+  const provSel = $("{{ form.province.id_for_label }}");
+  const muniSel = $("{{ form.municipality.id_for_label }}");
+
+  const getJSON = async (path) => {
+    const res = await fetch(`${API}${path}`);
+    if (!res.ok) throw new Error(res.status);
+    return res.json();
+  };
+
+  function fill(sel, items, placeholder, key) {
+    const wanted = saved[key]; saved[key] = "";
+    sel.innerHTML = "";
+    sel.add(new Option(placeholder, ""));
+    items.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach((it) => {
+      const opt = new Option(it.name, it.name);
+      opt.dataset.code = it.code;
+      sel.add(opt);
+    });
+    if (wanted) sel.value = wanted;
+  }
+  function reset(sel, placeholder) { sel.innerHTML = ""; sel.add(new Option(placeholder, "")); }
+  function failed(sel) { reset(sel, "Could not load — reload the page"); }
+
+  async function onRegion() {
+    reset(provSel, "— select region —");
+    reset(muniSel, "— select municipality —");
+    const code = regionSel.selectedOptions[0]?.dataset.code;
+    if (!code) return;
+    try {
+      const provinces = await getJSON(`/regions/${code}/provinces.json`);
+      if (provinces.length) {
+        fill(provSel, provinces, "— select province —", "province");
+        if (provSel.value) await onProvince();
+      } else {
+        // e.g. NCR has no provinces; municipalities hang directly off the region
+        provSel.innerHTML = '<option value="N/A">Not applicable</option>';
+        fill(muniSel, await getJSON(`/regions/${code}/cities-municipalities.json`),
+             "— select municipality —", "municipality");
+      }
+    } catch (e) { failed(provSel); }
+  }
+  async function onProvince() {
+    reset(muniSel, "— select municipality —");
+    const code = provSel.selectedOptions[0]?.dataset.code;
+    if (!code) return;
+    try {
+      fill(muniSel, await getJSON(`/provinces/${code}/cities-municipalities.json`),
+           "— select municipality —", "municipality");
+    } catch (e) { failed(muniSel); }
+  }
+
+  regionSel.addEventListener("change", onRegion);
+  provSel.addEventListener("change", onProvince);
+
+  (async () => {
+    try {
+      fill(regionSel, await getJSON("/regions.json"), "— select region —", "region");
+      if (regionSel.value) await onRegion();
+    } catch (e) { failed(regionSel); }
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+<ol class="stepper" aria-label="Booking progress">
+  {% for s in steps %}
+    <li class="step {% if s.number == current %}is-current{% elif s.number < current %}is-done{% endif %}"
+        {% if s.number == current %}aria-current="step"{% endif %}>
+      <span class="step-dot">{{ s.number }}</span>
+      <span class="step-label">{{ s.label }}</span>
+    </li>
+  {% endfor %}
+</ol>

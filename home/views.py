@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
-# Create your views here.
+
+def home(request):
+    if request.method == "POST":
+        request.session["appointment_type"] = request.POST.get(
+            "appointment_type",
+            "clinical",
+        )
+        return redirect("appointments:step1")
+    return render(request, "home/home.html")

@@ -1,0 +1,27 @@
+{% extends "pages/base.html" %}
+{% load static %}
+{% block title %}Schedule Your Appointment{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'home/css/home.css' %}">{% endblock %}
+
+{% block content %}
+<section class="schedule-card">
+  <header class="schedule-head">
+    <h1>Schedule Your Appointment</h1>
+    <p>Please select the type of appointment you would like to book</p>
+  </header>
+
+  <div class="schedule-body">
+    <form method="post" action="{% url 'home:home' %}">
+      {% csrf_token %}
+      <label class="appt-option">
+        <input type="radio" name="appointment_type" value="clinical" checked>
+        <span class="appt-title">Clinical Appointment</span>
+        <span class="appt-sub">OPD/Outpatient Consultation</span>
+      </label>
+      <div class="schedule-actions">
+        <button type="submit" class="btn">Next</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

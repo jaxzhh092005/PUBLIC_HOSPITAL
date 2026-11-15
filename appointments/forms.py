@@ -1,33 +1,107 @@
 from django import forms
+from django.core.validators import RegexValidator
+from django.utils import timezone
 
-class AppointmentStep1Form(forms.Form):
+# Replace with a ModelChoiceField on your doctors' Specialization model when ready.
+SPECIALIZATIONS = [
+    ("", "—select specialization—"),
+    ("general", "General Medicine"),
+    ("pediatrics", "Pediatrics"),
+    ("obgyn", "Obstetrics & Gynecology"),
+    ("cardiology", "Cardiology"),
+    ("dermatology", "Dermatology"),
+    ("orthopedics", "Orthopedics"),
+    ("ent", "Ear, Nose & Throat"),
+    ("ophthalmology", "Ophthalmology"),
+]
 
-    specialization = forms.CharField()
 
-class AppointmentStep2Form(forms.Form):
-
-    appointment_date = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'type':'date'}
-        )
+class SpecializationForm(forms.Form):
+    specialization = forms.ChoiceField(
+        label="Select Specialization",
+        choices=SPECIALIZATIONS,
+        error_messages={"required": "Please select a specialization to continue."},
+        widget=forms.Select(attrs={"class": "field-select"}),
     )
 
-class AppointmentStep3Form(forms.Form):
 
-    doctor = forms.IntegerField()
-
-    time_slot = forms.TimeField()
-
-class AppointmentStep4Form(forms.Form):
-
-    reason = forms.CharField(
-        widget=forms.Textarea
+class DateForm(forms.Form):
+    date = forms.DateField(
+        label="Select Date",
+        error_messages={
+            "required": "Please select a date to continue.",
+            "invalid": "Enter a valid date.",
+        },
+        widget=forms.DateInput(attrs={"class": "field-select field-date", "type": "date"}),
     )
 
-class AppointmentStep5Form(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Browsers block past dates in the picker; clean_date enforces it server-side.
+        self.fields["date"].widget.attrs["min"] = timezone.localdate().isoformat()
 
-    valid_id = forms.FileField()
+    def clean_date(self):
+        value = self.cleaned_data["date"]
+        if value < timezone.localdate():
+            raise forms.ValidationError("Please choose today or a future date.")
+        return value
 
-    laboratory = forms.FileField(
-        required=False
+
+def _input(placeholder="", **attrs):
+    return forms.TextInput(attrs={"class": "field-input", "placeholder": placeholder, **attrs})
+
+
+def _select(placeholder):
+    # Region / province / municipality options are loaded by JS (PSGC API),
+    # so the server only checks that a value was submitted.
+    return forms.Select(attrs={"class": "field-select"}, choices=[("", placeholder)])
+
+
+class InformationForm(forms.Form):
+    SUFFIXES = [("", "— select —"), ("Jr.", "Jr."), ("Sr.", "Sr."),
+                ("II", "II"), ("III", "III"), ("IV", "IV"), ("V", "V")]
+    GENDERS = [("", "— select —"), ("Male", "Male"), ("Female", "Female"),
+               ("Prefer not to say", "Prefer not to say")]
+    REQ = "This field is required."
+
+    last_name = forms.CharField(label="Last Name", max_length=60, widget=_input(),
+                                error_messages={"required": REQ})
+    first_name = forms.CharField(label="First Name", max_length=60, widget=_input(),
+                                 error_messages={"required": REQ})
+    middle_name = forms.CharField(label="Middle Name", max_length=60, required=False, widget=_input())
+
+    suffix = forms.ChoiceField(label="Suffix", choices=SUFFIXES, required=False,
+                               widget=forms.Select(attrs={"class": "field-select"}))
+    birthdate = forms.DateField(label="Birthdate", error_messages={"required": REQ, "invalid": "Enter a valid date."},
+                                widget=forms.DateInput(attrs={"class": "field-input field-date", "type": "date"}))
+    gender = forms.ChoiceField(label="Gender", choices=GENDERS, error_messages={"required": REQ},
+                               widget=forms.Select(attrs={"class": "field-select"}))
+
+    email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={"class": "field-input"}),
+                             error_messages={"required": REQ, "invalid": "Enter a valid email address."})
+    contact_number = forms.CharField(
+        label="Contact Number", max_length=20, widget=_input("09XXXXXXXXX", inputmode="tel"),
+        validators=[RegexValidator(r"^(09|\+639)\d{9}$", "Use a Philippine mobile number, e.g. 09123456789.")],
+        error_messages={"required": REQ},
     )
+
+    region = forms.CharField(label="Region", widget=_select("— select region —"), error_messages={"required": REQ})
+    province = forms.CharField(label="Province", widget=_select("— select region —"), error_messages={"required": REQ})
+    municipality = forms.CharField(label="Municipality", widget=_select("— select municipality —"),
+                                   error_messages={"required": REQ})
+    barangay = forms.CharField(label="Barangay", max_length=80, widget=_input(), error_messages={"required": REQ})
+    street = forms.CharField(label="House No. / Street", max_length=150, widget=_input(),
+                             error_messages={"required": REQ})
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["birthdate"].widget.attrs["max"] = timezone.localdate().isoformat()
+
+    def clean_birthdate(self):
+        value = self.cleaned_data["birthdate"]
+        if value > timezone.localdate():
+            raise forms.ValidationError("Birthdate cannot be in the future.")
+        return value
+
+    def clean_contact_number(self):
+        return self.cleaned_data["contact_number"].replace(" ", "").replace("-", "")

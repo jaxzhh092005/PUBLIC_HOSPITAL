@@ -1,0 +1,14 @@
+{% extends "appointments/step_base.html" %}
+{% block title %}Choose a Specialty{% endblock %}
+
+{% block step_fields %}
+  <div class="field">
+    <label for="{{ form.specialization.id_for_label }}">
+      {{ form.specialization.label }} <span class="req">*</span>
+    </label>
+    {{ form.specialization }}
+    {% for error in form.specialization.errors %}
+      <p class="field-error" role="alert">{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

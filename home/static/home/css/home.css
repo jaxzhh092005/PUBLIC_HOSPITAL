@@ -1,0 +1,21 @@
+.schedule-card {
+  max-width: 800px; margin: 2rem auto; background: var(--white);
+  border: 2px solid var(--teal); border-radius: 36px; overflow: hidden;
+}
+.schedule-head { background: var(--teal); color: var(--white); text-align: center; padding: 1.1rem 1rem; }
+.schedule-head h1 {
+  font-family: "Barlow Condensed", sans-serif; font-weight: 700;
+  font-size: 1.6rem; text-transform: uppercase; letter-spacing: .03em;
+}
+.schedule-head p { font-size: .8rem; opacity: .9; margin-top: .15rem; }
+.schedule-body { padding: 2.25rem 2.5rem 2rem; }
+.appt-option {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  padding: 1.5rem 1rem; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer;
+}
+.appt-option:has(input:checked) { border-color: var(--teal); background: var(--teal-light); }
+.appt-option input { position: absolute; opacity: 0; pointer-events: none; }
+.appt-option:has(input:focus-visible) { outline: 2px solid var(--teal); outline-offset: 3px; }
+.appt-title { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 1.6rem; color: var(--teal); }
+.appt-sub { font-size: .8rem; color: var(--muted); }
+.schedule-actions { display: flex; justify-content: center; margin-top: 1.75rem; }
