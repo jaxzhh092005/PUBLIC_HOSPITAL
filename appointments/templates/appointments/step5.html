@@ -1,0 +1,28 @@
+{% extends "appointments/step_base.html" %}
+
+{% block next_label %}Submit{% endblock %}
+
+{% block step_fields %}
+<h2 class="review-title">Review Your Information</h2>
+
+<section class="review-card" aria-labelledby="rv-appt">
+  <h3 id="rv-appt">Appointment Details</h3>
+  <dl>
+    <div><dt>Specialization:</dt><dd>{{ review.specialization }}</dd></div>
+    <div><dt>Date:</dt><dd>{{ review.date|date:"F j, Y" }}</dd></div>
+    <div><dt>Time:</dt><dd class="muted">To be confirmed by the hospital</dd></div>
+  </dl>
+</section>
+
+<section class="review-card" aria-labelledby="rv-person">
+  <h3 id="rv-person">Personal Information</h3>
+  <dl>
+    <div><dt>Full Name:</dt><dd>{{ review.full_name }}</dd></div>
+    <div><dt>Birthdate:</dt><dd>{{ review.birthdate|date:"F j, Y" }}</dd></div>
+    <div><dt>Gender:</dt><dd>{{ review.gender }}</dd></div>
+    <div><dt>Email:</dt><dd>{{ review.email }}</dd></div>
+    <div><dt>Mobile:</dt><dd>{{ review.mobile }}</dd></div>
+    <div><dt>Address:</dt><dd>{{ review.address }}</dd></div>
+  </dl>
+</section>
+{% endblock %}

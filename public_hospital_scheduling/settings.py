@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'appointments',
+    'bookings',
     'availability',
     'hospitals',
     'doctors',

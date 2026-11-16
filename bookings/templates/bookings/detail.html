@@ -1,0 +1,38 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}Appointment Details{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'appointments/css/appointments.css' %}">
+  <link rel="stylesheet" href="{% static 'bookings/css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrap">
+  <a href="{% url 'bookings:list' %}" class="back-link"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to bookings</a>
+  <h1 class="review-title">{{ a.title }}</h1>
+
+  <section class="review-card">
+    <h3>Appointment Details</h3>
+    <dl>
+      <div><dt>Status:</dt><dd>{{ a.get_status_display }}</dd></div>
+      <div><dt>Specialization:</dt><dd>{{ a.specialization }}</dd></div>
+      <div><dt>Doctor:</dt><dd>{{ a.doctor_name|default:"To be assigned" }}</dd></div>
+      <div><dt>Hospital:</dt><dd>{{ a.hospital_name|default:"To be assigned" }}</dd></div>
+      <div><dt>Date:</dt><dd>{{ a.appointment_date|date:"F j, Y" }}</dd></div>
+      <div><dt>Time:</dt><dd>{% if a.appointment_time %}{{ a.appointment_time|time:"g:i A" }}{% else %}To be confirmed{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  <section class="review-card">
+    <h3>Personal Information</h3>
+    <dl>
+      <div><dt>Full Name:</dt><dd>{{ a.first_name }} {{ a.middle_name }} {{ a.last_name }} {{ a.suffix }}</dd></div>
+      <div><dt>Birthdate:</dt><dd>{{ a.birthdate|date:"F j, Y" }}</dd></div>
+      <div><dt>Gender:</dt><dd>{{ a.gender }}</dd></div>
+      <div><dt>Email:</dt><dd>{{ a.email }}</dd></div>
+      <div><dt>Mobile:</dt><dd>{{ a.contact_number }}</dd></div>
+      <div><dt>Address:</dt><dd>{{ a.street }}, {{ a.barangay }}, {{ a.municipality }}{% if a.province != "N/A" %}, {{ a.province }}{% endif %}, {{ a.region }}</dd></div>
+    </dl>
+  </section>
+</div>
+{% endblock %}

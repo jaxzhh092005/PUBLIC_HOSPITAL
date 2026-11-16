@@ -16,10 +16,15 @@
   {% block navbar %}{% include "patients/navbar.html" %}{% endblock %}
 
   <main class="page-main">
+    {% if messages %}
+      <ul class="flash" role="status">
+        {% for m in messages %}<li class="flash-{{ m.tags }}">{{ m }}</li>{% endfor %}
+      </ul>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 
-  {% include "footer.html" %}
+  {% include "page/footer.html" %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

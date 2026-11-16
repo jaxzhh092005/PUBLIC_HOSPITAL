@@ -1,0 +1,56 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}My Files{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'files/css/files.css' %}">{% endblock %}
+
+{% block content %}
+<section class="files-layout" aria-label="Your medical files">
+  <aside class="files-sidebar">
+    <button class="files-menu" type="button" aria-label="File categories"><i class="bi bi-list"></i></button>
+    <nav aria-label="File categories">
+      <a href="{% url 'files:list' %}" {% if not file_type %}class="selected"{% endif %}>
+        <i class="bi bi-folder2-open" aria-hidden="true"></i> All Files
+      </a>
+      <a href="{% url 'files:list' %}?type=PRESCRIPTION" {% if file_type == 'PRESCRIPTION' %}class="selected"{% endif %}>
+        <i class="bi bi-prescription2" aria-hidden="true"></i> Prescription
+      </a>
+      <a href="{% url 'files:list' %}?type=LAB" {% if file_type == 'LAB' %}class="selected"{% endif %}>
+        <i class="bi bi-flask" aria-hidden="true"></i> Lab Tests
+      </a>
+    </nav>
+  </aside>
+
+  <div class="files-content">
+    <form method="get" class="files-search" role="search">
+      {% if file_type %}<input type="hidden" name="type" value="{{ file_type }}">{% endif %}
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="q" value="{{ q }}" placeholder="Search for files ..." aria-label="Search files">
+    </form>
+
+    {% if files %}
+      <ul class="file-list">
+        {% for file in files %}
+          <li class="file-item">
+            <div class="file-icon"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i></div>
+            <div class="file-info">
+              <strong>{{ file.document.name }}</strong>
+              <span>{{ file.get_file_type_display }} · {{ file.uploaded_at|date:"M j, Y" }}</span>
+            </div>
+            <a class="file-download" href="{% url 'files:download' file.pk %}" aria-label="Download {{ file.get_file_type_display }}">
+              <i class="bi bi-download" aria-hidden="true"></i>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="files-empty">
+        <div class="files-empty-icon" aria-hidden="true">
+          <i class="bi bi-file-earmark-medical"></i>
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <p>{% if q or file_type %}No files match your search.{% else %}Files from your doctors or lab tests will go here.{% endif %}</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

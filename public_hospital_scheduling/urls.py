@@ -25,8 +25,14 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('signin/', include(('signin.urls', 'signin'), namespace='signin')),
     path('appointments/', include('appointments.urls')),
+    path('bookings/', include('bookings.urls')),
+    path('doctors/', include('doctors.urls')),
+    path('files/', include('files.urls')),
     path('home/', include('home.urls')),
     path('nurse/', nurse_dashboard, name='nurse-dashboard'),
     path("", include("page.urls")),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(
+    settings.MEDIA_URL + 'doctor_photos/',
+    document_root=settings.MEDIA_ROOT / 'doctor_photos',
+)

@@ -10,6 +10,10 @@ class HomePageTests(TestCase):
         self.assertContains(response, "Schedule Your Appointment")
         self.assertContains(response, "/static/css/base.css")
         self.assertContains(response, "/static/home/css/home.css")
+        self.assertContains(response, reverse("home:home"))
+        self.assertContains(response, reverse("doctors:list"))
+        self.assertContains(response, reverse("bookings:list"))
+        self.assertContains(response, reverse("files:list"))
 
     def test_next_saves_appointment_type_and_opens_step_one(self):
         response = self.client.post(

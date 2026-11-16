@@ -1,0 +1,49 @@
+.files-layout {
+  display: grid; grid-template-columns: clamp(100px, 17%, 190px) minmax(0, 1fr);
+  min-height: 60vh; margin: -2.5rem -1.5rem;
+}
+.files-sidebar { min-width: 0;min-height: 20; padding: 3rem .5rem; background: #f2f2f2; }
+.files-menu {
+  display: block; margin: 0 auto 1rem; border: 0; background: transparent;
+  color: var(--muted); font-size: 1.3rem;
+}
+
+.files-sidebar nav { display: grid; gap: .35rem; }
+.files-sidebar nav a {
+  display: flex; align-items: center; gap: .55rem; padding: .55rem .5rem;
+  border-radius: 7px; color: var(--ink); font-size: .8rem;
+}
+.files-sidebar nav a i { font-size: 1.05rem; }
+.files-sidebar nav a.selected, .files-sidebar nav a:hover {
+  background: var(--white); color: var(--teal);
+}
+.files-content { min-width: 0; padding: .8rem 2.5rem; }
+.files-search {
+  display: flex; align-items: center; gap: .75rem; max-width: 850px;
+  min-height: 44px; margin: 0 auto; padding: 0 .9rem;
+  border: 1px solid var(--teal); border-radius: 7px; color: var(--teal);
+}
+.files-search input { width: 100%; border: 0; outline: 0; color: var(--ink); font: inherit; }
+.files-empty {
+  display: flex; min-height: 45vh; flex-direction: column;
+  align-items: center; justify-content: center; gap: .8rem;
+  color: var(--muted); text-align: center;
+}
+.files-empty-icon { position: relative; height: 90px; width: 110px; color: #a99cff; font-size: 4.5rem; }
+.files-empty-icon i:first-child { position: absolute; left: 5px; top: 10px; color: #ffb6c8; }
+.files-empty-icon i:last-child { position: absolute; right: 3px; top: 0; }
+.file-list { max-width: 850px; margin: 1.5rem auto; list-style: none; }
+.file-item {
+  display: flex; align-items: center; gap: 1rem; padding: .9rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.file-icon { color: var(--teal); font-size: 1.5rem; }
+.file-info { display: grid; flex: 1; gap: .2rem; min-width: 0; }
+.file-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-info span { color: var(--muted); font-size: .85rem; }
+.file-download { color: var(--teal); font-size: 1.2rem; }
+@media (max-width: 620px) {
+  .files-layout { min-height: 65vh; }
+  .files-layout { grid-template-columns: 120px minmax(0, 1fr); }
+  .files-content { padding-inline: .8rem; }
+}

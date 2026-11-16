@@ -3,7 +3,7 @@ from django.urls import reverse
 
 
 class AppointmentStepFlowTests(TestCase):
-    def test_review_step_next_redirects_to_home(self):
+    def test_review_step_without_session_redirects_to_first_missing_step(self):
         response = self.client.post(reverse("appointments:step5"))
 
-        self.assertRedirects(response, reverse("home:home"))
+        self.assertRedirects(response, reverse("appointments:step1"))

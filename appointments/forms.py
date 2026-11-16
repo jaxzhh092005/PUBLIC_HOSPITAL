@@ -105,3 +105,34 @@ class InformationForm(forms.Form):
 
     def clean_contact_number(self):
         return self.cleaned_data["contact_number"].replace(" ", "").replace("-", "")
+
+
+class DocumentsForm(forms.Form):
+    MAX_BYTES = 10 * 1024 * 1024
+    ALLOWED_FORMATS = {"JPEG", "PNG"}
+
+    valid_id = forms.ImageField(
+        label="Upload your Valid ID",
+        required=False,  # enforced in clean_valid_id so a previous upload can satisfy it
+        widget=forms.ClearableFileInput(attrs={
+            "class": "dropzone-input", "accept": "image/jpeg,image/png",
+        }),
+        error_messages={"invalid_image": "Upload a valid JPEG or PNG image."},
+    )
+
+    def __init__(self, *args, has_existing=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.has_existing = has_existing
+
+    def clean_valid_id(self):
+        f = self.cleaned_data.get("valid_id")
+        if not f:
+            if self.has_existing:
+                return None  # keep the file uploaded earlier
+            raise forms.ValidationError("Please upload your valid ID to continue.")
+        if f.size > self.MAX_BYTES:
+            raise forms.ValidationError("File is too large. Maximum size is 10MB.")
+        # ImageField has already opened it with Pillow; check the real format, not the extension.
+        if getattr(f.image, "format", None) not in self.ALLOWED_FORMATS:
+            raise forms.ValidationError("Only JPEG or PNG images are accepted.")
+        return f

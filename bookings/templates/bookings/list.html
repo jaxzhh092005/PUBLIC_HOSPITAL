@@ -1,0 +1,91 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}My Bookings{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'bookings/css/bookings.css' %}">{% endblock %}
+
+{% block content %}
+<form method="get" class="booking-tools" role="search">
+  <div class="search-box">
+    <i class="bi bi-search" aria-hidden="true"></i>
+    <input type="search" name="q" value="{{ q }}" placeholder="Search for your bookings ..." aria-label="Search your bookings">
+  </div>
+
+  <div class="filter-wrap" data-active="{% if status %}true{% endif %}">
+    <button type="button" class="filter-btn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel">
+      <i class="bi bi-sliders" aria-hidden="true"></i> FILTER
+    </button>
+    <div class="filter-panel" id="filterPanel" hidden>
+      <label for="status">Status</label>
+      <select name="status" id="status">
+        <option value="">All</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-sm">Apply</button>
+    </div>
+  </div>
+</form>
+
+<section class="booking-list" aria-label="Your bookings">
+  {% for a in appointments %}
+  <article class="booking-card">
+    <div class="avatar">
+      {% if a.doctor_photo %}<img src="{{ a.doctor_photo.url }}" alt="">{% else %}<i class="bi bi-person-fill" aria-hidden="true"></i>{% endif %}
+    </div>
+
+    <div class="doc">
+      <h2>{% if a.doctor_name %}{{ a.doctor_name }}{% else %}Doctor to be assigned{% endif %}</h2>
+      <p class="spec">{{ a.specialization }}</p>
+    </div>
+
+    <div class="when">
+      <p class="when-title">{{ a.title }}</p>
+      <div class="when-row">
+        <i class="bi bi-calendar-check" aria-hidden="true"></i>
+        <div>
+          <p class="place">{% if a.hospital_name %}{{ a.hospital_name }}{% else %}Hospital to be assigned{% endif %}</p>
+          <p class="time">
+            {% if a.appointment_date == today %}Today{% elif a.appointment_date == tomorrow %}Tomorrow{% else %}{{ a.appointment_date|date:"M j, Y" }}{% endif %},
+            {% if a.appointment_time %}{{ a.appointment_time|time:"g:i A" }}{% else %}time to be confirmed{% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="{% url 'bookings:detail' a.pk %}" class="btn btn-sm">See Appointment</a>
+      <a href="#" class="reschedule">Reschedule</a>
+    </div>
+  </article>
+  {% empty %}
+  <div class="empty">
+    <i class="bi bi-calendar2-x" aria-hidden="true"></i>
+    <p>{% if q or status %}No bookings match your search.{% else %}You have no bookings yet.{% endif %}</p>
+    <a href="{% url 'home:home' %}" class="btn btn-sm">Book an appointment</a>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const btn = document.getElementById("filterBtn");
+  const panel = document.getElementById("filterPanel");
+  btn.addEventListener("click", () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    btn.setAttribute("aria-expanded", open);
+  });
+  document.addEventListener("click", (e) => {
+    if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.hidden = true; btn.setAttribute("aria-expanded", false);
+    }
+  });
+  // Keep the panel open after filtering so the active status is visible
+  if (btn.closest(".filter-wrap").dataset.active === "true") {
+    panel.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+  }
+</script>
+{% endblock %}

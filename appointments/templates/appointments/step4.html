@@ -1,0 +1,61 @@
+{% extends "appointments/step_base.html" %}
+
+{% block step_fields %}
+<div class="field">
+  <label for="{{ form.valid_id.id_for_label }}">
+    {{ form.valid_id.label }} <span class="req" aria-hidden="true">*</span>
+  </label>
+
+  <label class="dropzone" id="dropzone" for="{{ form.valid_id.id_for_label }}">
+    {{ form.valid_id }}
+    <img id="preview" class="dropzone-preview" alt="Preview of selected ID" hidden>
+    <span class="dropzone-title" id="dzTitle">click to upload documents</span>
+    <span class="dropzone-hint" id="dzHint">
+      {% if existing %}Uploaded: {{ existing.name }} — click to replace{% else %}accepted formats : JPEG or PNG (max 10mb){% endif %}
+    </span>
+  </label>
+
+  {% for error in form.valid_id.errors %}
+    <p class="field-error" role="alert">{{ error }}</p>
+  {% endfor %}
+  <p class="field-error" id="dzError" role="alert" hidden></p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const input = document.getElementById("{{ form.valid_id.id_for_label }}");
+  const zone = document.getElementById("dropzone");
+  const title = document.getElementById("dzTitle");
+  const hint = document.getElementById("dzHint");
+  const preview = document.getElementById("preview");
+  const err = document.getElementById("dzError");
+  const MAX = 10 * 1024 * 1024;
+
+  function show(file) {
+    err.hidden = true;
+    if (!file) return;
+    if (!["image/jpeg", "image/png"].includes(file.type)) return reject("Only JPEG or PNG images are accepted.");
+    if (file.size > MAX) return reject("File is too large. Maximum size is 10MB.");
+    title.textContent = file.name;
+    hint.textContent = (file.size / 1024 / 1024).toFixed(2) + " MB — click to change";
+    if (preview.src) URL.revokeObjectURL(preview.src);
+    preview.src = URL.createObjectURL(file);
+    preview.hidden = false;
+    zone.classList.add("has-file");
+  }
+  function reject(msg) {
+    input.value = "";
+    preview.hidden = true;
+    zone.classList.remove("has-file");
+    err.textContent = msg; err.hidden = false;
+  }
+
+  input.addEventListener("change", () => show(input.files[0]));
+  ["dragenter", "dragover"].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add("is-drag"); }));
+  ["dragleave", "drop"].forEach((ev) => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.remove("is-drag"); }));
+  zone.addEventListener("drop", (e) => {
+    if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; show(input.files[0]); }
+  });
+</script>
+{% endblock %}
