@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
@@ -20,6 +21,21 @@ class SigninPageTests(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("signin:login"))
+
+    def test_signin_without_next_redirects_to_home(self):
+        user_model = get_user_model()
+        user_model.objects.create_user(
+            username="user@example.com",
+            email="user@example.com",
+            password="secret123",
+        )
+
+        response = self.client.post(reverse("signin:login"), {
+            "email": "user@example.com",
+            "password": "secret123",
+        })
+
+        self.assertRedirects(response, reverse("landing"))
 
     def test_invalid_email_formats_show_an_error(self):
         requests = (

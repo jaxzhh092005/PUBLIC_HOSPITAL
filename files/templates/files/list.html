@@ -1,12 +1,12 @@
 {% extends "page/base.html" %}
 {% load static %}
 {% block title %}My Files{% endblock %}
+{% block body_class %}files-page{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'files/css/files.css' %}">{% endblock %}
 
 {% block content %}
 <section class="files-layout" aria-label="Your medical files">
   <aside class="files-sidebar">
-    <button class="files-menu" type="button" aria-label="File categories"><i class="bi bi-list"></i></button>
     <nav aria-label="File categories">
       <a href="{% url 'files:list' %}" {% if not file_type %}class="selected"{% endif %}>
         <i class="bi bi-folder2-open" aria-hidden="true"></i> All Files

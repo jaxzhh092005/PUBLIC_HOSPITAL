@@ -1,8 +1,8 @@
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, login, logout
+from django.utils.http import url_has_allowed_host_and_scheme
 
 User = get_user_model()
 
@@ -17,6 +17,7 @@ def is_valid_email(email: str) -> bool:
 
 def login_view(request):
     error = None
+    next_url = request.POST.get("next") or request.GET.get("next", "")
     if request.method == "POST":
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password", "")
@@ -32,9 +33,15 @@ def login_view(request):
                 login(request, user)
                 if not request.POST.get("remember"):
                     request.session.set_expiry(0)
-                return redirect("/")
+                if next_url and url_has_allowed_host_and_scheme(
+                    next_url,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure(),
+                ):
+                    return redirect(next_url)
+                return redirect("landing")
             error = "Incorrect email or password."
-    return render(request, "signin/login.html", {"error": error})
+    return render(request, "signin/login.html", {"error": error, "next": next_url})
 
 
 def signup_view(request):

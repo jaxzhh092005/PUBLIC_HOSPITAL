@@ -1,0 +1,111 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}Account{% endblock %}
+{% block navbar %}{% endblock %}  {# no navbar on this page #}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'accounts/css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<div class="account" id="account" data-open="{{ open_dialog }}">
+
+{% if editing %}
+  {# ---------- EDIT MODE: X cancels, check saves ---------- #}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ return_url }}">
+    <header class="acc-head">
+      <a href="{% url 'accounts:detail' %}" class="acc-icon" aria-label="Cancel" onclick="if (history.length > 1) { history.back(); return false; }"><i class="bi bi-x-lg"></i></a>
+      <h1>Account</h1>
+      <button type="submit" class="acc-icon" aria-label="Save changes"><i class="bi bi-check-lg"></i></button>
+    </header>
+    <div class="acc-body">
+      {% include "accounts/field.html" with field=form.first_name %}
+      {% include "accounts/field.html" with field=form.middle_name %}
+      {% include "accounts/field.html" with field=form.last_name %}
+      {% include "accounts/field.html" with field=form.birthdate %}
+    </div>
+  </form>
+
+{% else %}
+  {# ---------- VIEW MODE: back arrow, pencil edits ---------- #}
+  <header class="acc-head">
+    <a href="/" class="acc-icon" aria-label="Back" onclick="if (history.length > 1) { history.back(); return false; }"><i class="bi bi-arrow-left"></i></a>
+    <h1>Account</h1>
+    <a href="{% url 'accounts:edit' %}" class="acc-icon" aria-label="Edit account"><i class="bi bi-pencil"></i></a>
+  </header>
+
+  <div class="acc-body">
+    <div class="acc-field"><label for="v-first">First Name</label>
+      <input id="v-first" class="acc-input" value="{{ user.first_name }}" readonly></div>
+    <div class="acc-field"><label for="v-middle">Middle Name</label>
+      <input id="v-middle" class="acc-input" value="{{ profile.middle_name }}" readonly></div>
+    <div class="acc-field"><label for="v-last">Last Name</label>
+      <input id="v-last" class="acc-input" value="{{ user.last_name }}" readonly></div>
+    <div class="acc-field"><label for="v-birth">Birthdate</label>
+      <input id="v-birth" type="date" class="acc-input" value="{{ profile.birthdate|date:'Y-m-d' }}" readonly tabindex="-1"></div>
+
+    <div class="acc-field"><label for="v-mobile">Mobile Number</label>
+      <div class="acc-row">
+        <input id="v-mobile" class="acc-input" value="{{ profile.mobile_number|default:'+63' }}" readonly>
+        <button type="button" class="acc-change" data-dialog="mobileDialog">CHANGE</button>
+      </div>
+    </div>
+    <div class="acc-field"><label for="v-email">Email</label>
+      <div class="acc-row">
+        <input id="v-email" class="acc-input" value="{{ user.email }}" readonly>
+        <button type="button" class="acc-change" data-dialog="emailDialog">CHANGE</button>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="{% url 'accounts:logout' %}" class="acc-logout">
+    {% csrf_token %}
+    <button type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> LOGOUT</button>
+  </form>
+
+  <dialog id="mobileDialog" class="acc-dialog" aria-labelledby="mobileTitle">
+    <form method="post" action="{% url 'accounts:change_mobile' %}" novalidate>
+      {% csrf_token %}
+      <h2 id="mobileTitle">Change mobile number</h2>
+      <p class="acc-hint">Enter the 10 digits after +63.</p>
+      {% include "accounts/field.html" with field=mobile_form.mobile %}
+      {% include "accounts/field.html" with field=mobile_form.password %}
+      <div class="acc-dialog-actions">
+        <button type="button" class="acc-cancel" data-close>Cancel</button>
+        <button type="submit" class="acc-change">SAVE</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="emailDialog" class="acc-dialog" aria-labelledby="emailTitle">
+    <form method="post" action="{% url 'accounts:change_email' %}" novalidate>
+      {% csrf_token %}
+      <h2 id="emailTitle">Change email</h2>
+      {% include "accounts/field.html" with field=email_form.email %}
+      {% include "accounts/field.html" with field=email_form.password %}
+      <div class="acc-dialog-actions">
+        <button type="button" class="acc-cancel" data-close>Cancel</button>
+        <button type="submit" class="acc-change">SAVE</button>
+      </div>
+    </form>
+  </dialog>
+{% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const root = document.getElementById("account");
+
+  document.querySelectorAll("[data-dialog]").forEach((btn) =>
+    btn.addEventListener("click", () => document.getElementById(btn.dataset.dialog).showModal()));
+
+  document.querySelectorAll("dialog").forEach((dlg) => {
+    dlg.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => dlg.close()));
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); }); // click on backdrop
+  });
+
+  // After a failed submit, re-open the dialog that has errors
+  if (root.dataset.open) document.getElementById(root.dataset.open).showModal();
+</script>
+{% endblock %}

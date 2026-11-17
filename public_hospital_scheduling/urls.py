@@ -22,6 +22,7 @@ from nurse.views import nurse_dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('signin/', include(('signin.urls', 'signin'), namespace='signin')),
     path('appointments/', include('appointments.urls')),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('files/', include('files.urls')),
     path('home/', include('home.urls')),
     path('nurse/', nurse_dashboard, name='nurse-dashboard'),
+    path('patients/', include('patients.urls')),
     path("", include("page.urls")),
 ]
 urlpatterns += static(
