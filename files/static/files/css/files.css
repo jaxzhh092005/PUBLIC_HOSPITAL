@@ -1,13 +1,10 @@
+.files-page .page-main { display: flex; flex-direction: column; }
 .files-layout {
   display: grid; grid-template-columns: clamp(100px, 17%, 190px) minmax(0, 1fr);
   min-height: 60vh; margin: -2.5rem -1.5rem;
 }
-.files-sidebar { min-width: 0;min-height: 20; padding: 3rem .5rem; background: #f2f2f2; }
-.files-menu {
-  display: block; margin: 0 auto 1rem; border: 0; background: transparent;
-  color: var(--muted); font-size: 1.3rem;
-}
-
+.files-page .files-layout { flex: 1; min-height: 0; }
+.files-sidebar { min-width: 0; padding: 3rem .5rem; background: #f2f2f2; }
 .files-sidebar nav { display: grid; gap: .35rem; }
 .files-sidebar nav a {
   display: flex; align-items: center; gap: .55rem; padding: .55rem .5rem;

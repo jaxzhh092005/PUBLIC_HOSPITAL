@@ -36,6 +36,7 @@ class FileAccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "/static/files/css/files.css")
         self.assertContains(response, 'class="files-sidebar"')
+        self.assertNotContains(response, 'class="files-menu"')
         self.assertContains(response, "All Files")
         self.assertContains(response, "Prescription")
         self.assertContains(response, "Lab Tests")

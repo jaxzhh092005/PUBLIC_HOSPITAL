@@ -1,0 +1,100 @@
+{% extends "page/base.html" %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+  <section class="patient-dashboard" aria-label="Patient dashboard">
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Welcome back</p>
+        <h1>{{ patient.user.get_full_name|default:request.user.get_full_name|default:"Patient" }}</h1>
+      </div>
+      <a href="{% url 'home:home' %}" class="btn">Book another visit</a>
+    </div>
+
+    {% if patient %}
+      <div class="summary-grid">
+        <article class="summary-card">
+          <p class="label">Patient ID</p>
+          <h2>{{ patient.id }}</h2>
+        </article>
+        <article class="summary-card">
+          <p class="label">Email</p>
+          <h2>{{ patient.user.email }}</h2>
+        </article>
+        <article class="summary-card">
+          <p class="label">Mobile</p>
+          <h2>{{ patient.mobile }}</h2>
+        </article>
+      </div>
+    {% else %}
+      <div class="summary-card empty-state">
+        <p>Your patient profile has not been created yet. Complete your registration to view appointments.</p>
+      </div>
+    {% endif %}
+
+    <div class="panel-grid">
+      <section class="panel">
+        <h2>Upcoming appointments</h2>
+        {% if appointments %}
+          <ul class="appointment-list">
+            {% for appointment in appointments %}
+              <li>
+                <div>
+                  <strong>{{ appointment.doctor_name|default:"Doctor" }}</strong>
+                  <p>{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</p>
+                </div>
+                <span class="status {{ appointment.status|lower }}">{{ appointment.status }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">No appointments have been scheduled yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="panel">
+        <h2>Care team</h2>
+        <ul class="care-list">
+          <li>Primary care support</li>
+          <li>Lab coordination</li>
+          <li>Prescription follow-up</li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <style>
+    .patient-dashboard { max-width: 1100px; margin: 0 auto; }
+    .dashboard-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .eyebrow { color: #00907c; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; font-weight: 700; }
+    .dashboard-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-top: .35rem; }
+    .summary-grid, .panel-grid { display: grid; gap: 1rem; margin-top: 1.5rem; }
+    .summary-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .summary-card, .panel {
+      background: #fff; border: 1px solid #d5e3e0; border-radius: 18px; box-shadow: 0 10px 24px rgba(13, 35, 32, 0.04);
+      padding: 1.25rem 1.5rem;
+    }
+    .label { color: #6b7a78; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+    .summary-card h2 { margin-top: .5rem; font-size: 1.2rem; }
+    .panel-grid { grid-template-columns: 2fr 1fr; }
+    .panel h2 { margin-bottom: .75rem; }
+    .appointment-list, .care-list { list-style: none; display: grid; gap: .75rem; }
+    .appointment-list li, .care-list li {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid #edf2f1;
+    }
+    .appointment-list li:last-child, .care-list li:last-child { border-bottom: none; }
+    .status {
+      display: inline-flex; align-items: center; padding: .35rem .7rem; border-radius: 999px; font-size: .7rem; font-weight: 700; text-transform: uppercase;
+    }
+    .status.pending { background: #fff4d6; color: #8b6500; }
+    .status.approved { background: #dff7ee; color: #0b7a5d; }
+    .status.completed { background: #e8f0ff; color: #1d4ed8; }
+    .status.cancelled { background: #ffe4e6; color: #b42318; }
+    .muted { color: #6b7a78; }
+    .empty-state { background: #f5fbfa; }
+    @media (max-width: 760px) { .panel-grid { grid-template-columns: 1fr; } .dashboard-header { flex-direction: column; align-items: flex-start; } }
+  </style>
+{% endblock %}
