@@ -17,8 +17,10 @@ def _my_appointments(request):
 
 
 def booking_list(request):
-    qs = _my_appointments(request)
+    appointments = _my_appointments(request)
+    qs = appointments
     query = request.GET.get("q", "").strip()
+    selected_hospital = request.GET.get("hospital", "").strip()
     status = request.GET.get("status", "")
 
     if query:
@@ -26,12 +28,17 @@ def booking_list(request):
             Q(doctor_name__icontains=query) | Q(specialization__icontains=query)
             | Q(hospital_name__icontains=query)
         )
+    if selected_hospital:
+        qs = qs.filter(hospital_name=selected_hospital)
     if status in Appointment.Status.values:
         qs = qs.filter(status=status)
 
     return render(request, "bookings/list.html", {
         "appointments": qs.order_by("appointment_date", "appointment_time"),
         "q": query,
+        "hospitals": appointments.exclude(hospital_name="").order_by("hospital_name")
+        .values_list("hospital_name", flat=True).distinct(),
+        "selected_hospital": selected_hospital,
         "status": status,
         "statuses": Appointment.Status.choices,
         "today": timezone.localdate(),

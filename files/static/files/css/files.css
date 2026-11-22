@@ -1,20 +1,24 @@
-.files-page .page-main { display: flex; flex-direction: column; }
+.files-page .page-main { display: flex; flex-direction: column; min-height: 0; }
 .files-layout {
   display: grid; grid-template-columns: clamp(100px, 17%, 190px) minmax(0, 1fr);
-  min-height: 60vh; margin: -2.5rem -1.5rem;
+  min-height: 0; margin: -2.5rem -1.5rem;
 }
 .files-page .files-layout { flex: 1; min-height: 0; }
-.files-sidebar { min-width: 0; padding: 3rem .5rem; background: #f2f2f2; }
+.files-sidebar { min-width: 0;min-height: 100%; padding: 3rem .5rem; background: #f2f2f2; }
+.files-menu {
+  display: block; margin: 0 auto .5rem; border: 0; background: transparent;
+  color: var(--muted); font-size: 1.3rem;
+}
 .files-sidebar nav { display: grid; gap: .35rem; }
 .files-sidebar nav a {
-  display: flex; align-items: center; gap: .55rem; padding: .55rem .5rem;
+  display: flex; align-items: center; gap: .55rem; padding: .55rem .5rem; min-height: 50px;
   border-radius: 7px; color: var(--ink); font-size: .8rem;
 }
 .files-sidebar nav a i { font-size: 1.05rem; }
 .files-sidebar nav a.selected, .files-sidebar nav a:hover {
   background: var(--white); color: var(--teal);
 }
-.files-content { min-width: 0; padding: .8rem 2.5rem; }
+.files-content { min-width: 0; gap: 1rem; margin-bottom: 1.5rem; padding: 2.5rem 1.5rem; background: var(--white); }
 .files-search {
   display: flex; align-items: center; gap: .75rem; max-width: 850px;
   min-height: 44px; margin: 0 auto; padding: 0 .9rem;
@@ -40,7 +44,7 @@
 .file-info span { color: var(--muted); font-size: .85rem; }
 .file-download { color: var(--teal); font-size: 1.2rem; }
 @media (max-width: 620px) {
-  .files-layout { min-height: 65vh; }
+  .files-page .files-layout { flex: none; min-height: 65vh; }
   .files-layout { grid-template-columns: 120px minmax(0, 1fr); }
   .files-content { padding-inline: .8rem; }
 }

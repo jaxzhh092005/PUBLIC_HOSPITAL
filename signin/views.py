@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.forms import PasswordResetForm
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
@@ -39,7 +41,7 @@ def login_view(request):
                     require_https=request.is_secure(),
                 ):
                     return redirect(next_url)
-                return redirect("landing")
+                return redirect("home:home")
             error = "Incorrect email or password."
     return render(request, "signin/login.html", {"error": error, "next": next_url})
 
@@ -69,15 +71,27 @@ def signup_view(request):
 
 def forgot_password_view(request):
     message = None
+    error = None
+    email = request.POST.get("email", "").strip()
+    form = PasswordResetForm(request.POST or None)
+
     if request.method == "POST":
-        email = request.POST.get("email", "").strip()
-        if not email:
-            message = "Please enter your email address."
-        elif not is_valid_email(email):
-            message = "Please enter a valid email address."
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                subject_template_name="registration/password_reset_subject.txt",
+                email_template_name="registration/password_reset_email.html",
+            )
+            message = "If an account exists for that email, a password reset link has been sent."
         else:
-            message = "Password reset email delivery is not configured yet."
-    return render(request, "signin/forgot_password.html", {"message": message})
+            error = "Please enter a valid email address."
+    return render(request, "signin/forgot_password.html", {
+        "message": message,
+        "error": error,
+        "email": email,
+    })
 
 def logout_view(request):
     logout(request)
