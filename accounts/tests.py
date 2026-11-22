@@ -1,3 +1,5 @@
+from django.apps import apps
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -123,3 +125,20 @@ class AccountURLTests(TestCase):
             self.client.get(reverse("accounts:detail")),
             f'href="{reverse("accounts:edit")}" class="acc-icon" aria-label="Edit account"',
         )
+
+
+class AdminAccessTests(TestCase):
+    def test_superuser_can_manage_registered_project_models(self):
+        admin_user = get_user_model().objects.create_superuser(
+            username="admin@example.com",
+            email="admin@example.com",
+            password="secret123",
+        )
+        self.client.force_login(admin_user)
+
+        for app_label in ("accounts", "appointments", "doctors", "files", "hospitals", "nurse", "patients"):
+            for model in apps.get_app_config(app_label).get_models():
+                with self.subTest(model=model.__name__):
+                    self.assertTrue(admin.site.is_registered(model))
+                    url = reverse(f"admin:{app_label}_{model._meta.model_name}_changelist")
+                    self.assertEqual(self.client.get(url).status_code, 200)

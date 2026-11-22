@@ -160,7 +160,7 @@ document.getElementById("specialty").addEventListener("change", function() {
           <div><p class="name">Dr Godwin Grata</p><p class="spec">Pediatrics</p></div>
           <a class="btn btn-sm" href="#">CONSULT NOW</a>
         </li>
-        <li class="doc" id="moreDoctors" hidden>
+        <li class="doc" id="moreDoctors" hidden style="display: none;">
           <span class="avatar" aria-hidden="true">AS</span>
           <div><p class="name">Dr Andrea Santos</p><p class="spec">Neurology</p></div>
           <a class="btn btn-sm" href="#">CONSULT NOW</a>
@@ -217,6 +217,7 @@ document.getElementById("specialty").addEventListener("change", function() {
     toggleDoctors.addEventListener("click", () => {
       const showMore = moreDoctors.hidden;
       moreDoctors.hidden = !showMore;
+      moreDoctors.style.display = showMore ? "grid" : "none";
       toggleDoctors.setAttribute("aria-expanded", showMore);
       toggleDoctors.textContent = showMore ? "SHOW FEWER DOCTORS" : "VIEW MORE DOCTORS";
     });

@@ -296,7 +296,9 @@ h1 span { color: var(--teal); }
 }
 .name { font-weight: 600; font-size: 15px; line-height: 1.15; }
 .spec { font-size: 13px; color: var(--muted); }
-.btn-more { margin-top: 20px; }
+.btn-more {
+  margin-top: 20px; border: 0; font-family: inherit; cursor: pointer;
+}
 
 /* Hospitals */
 .hospitals { columns: 2; column-gap: 40px; }
