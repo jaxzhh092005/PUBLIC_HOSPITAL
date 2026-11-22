@@ -160,8 +160,14 @@ document.getElementById("specialty").addEventListener("change", function() {
           <div><p class="name">Dr Godwin Grata</p><p class="spec">Pediatrics</p></div>
           <a class="btn btn-sm" href="#">CONSULT NOW</a>
         </li>
+        <li class="doc" id="moreDoctors" hidden>
+          <span class="avatar" aria-hidden="true">AS</span>
+          <div><p class="name">Dr Andrea Santos</p><p class="spec">Neurology</p></div>
+          <a class="btn btn-sm" href="#">CONSULT NOW</a>
+        </li>
       </ul>
-      <a class="btn btn-sm btn-more" href="doctors.html">VIEW MORE DOCTORS</a>
+      <button class="btn btn-sm btn-more" id="toggleDoctors" type="button"
+              aria-controls="moreDoctors" aria-expanded="false">VIEW MORE DOCTORS</button>
     </section>
 
     <!-- Hospitals -->
@@ -169,13 +175,13 @@ document.getElementById("specialty").addEventListener("change", function() {
       <h2 id="hosp-title">Hospitals near you</h2>
       <p class="sub">We have Doctors in these hospitals who are ready to serve you!</p>
       <ul class="hospitals">
-        <li><a href="#">Quezon Medical Center</a></li>
-        <li><a href="#">Lucena MMG General Hospital</a></li>
-        <li><a href="#">Lucena United Doctors Hospital and Medical Center</a></li>
-        <li><a href="#">Mount Carmel Diocesan General Hospital</a></li>
-        <li><a href="#">St. Anne General Hospital</a></li>
-        <li><a href="#">JCE Medical Center Sariaya</a></li>
-        <li><a href="#">EMG Hospital Sariaya</a></li>
+        <li><a href="https://www.google.com/maps/place/Quezon+Medical+Center/@13.9421847,121.6098926,732m/data=!3m2!1e3!4b1!4m6!3m5!1s0x33bd4b58a032c387:0xb7eba1f3a973e39a!8m2!3d13.9421847!4d121.6124675!16s%2Fg%2F1tj6rc2z?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">Quezon Medical Center</a></li>
+        <li><a href="https://www.google.com/maps/place/Lucena+MMG+General+Hospital/@13.944977,121.6283401,732m/data=!3m2!1e3!4b1!4m6!3m5!1s0x33a2b3537ee84349:0x4cdcf1ab8b4c5028!8m2!3d13.944977!4d121.630915!16s%2Fg%2F1trsvk0c?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">Lucena MMG General Hospital</a></li>
+        <li><a href="https://www.google.com/maps?sca_esv=9fbfa33c0b6ab19b&output=search&q=lucena+united+doctors+hospital+and+medical+center&source=lnms&fbs=ACAhTvwdifjn2dKXmjtOfBxVFl_kLBox-h-5AW0ZXh2MKXEKdBF8ZkavTGQ6ZxrW7e6Os6fcnPX972p8OATheKyVNf-jFxyKnllRSyJzwBWjFrSI72Ou0RR3RzSRsREwOI_3tDTQo5pZBdBUfTweg5TOLEzJ1xjcUrTNBKf8QA7ZnmF90SSTkOMJoQzru4nNVhATu7e0s6jAGOGf9McQ0lJFYfdhh5r5xQ&entry=mc&ved=1t:200715&ictx=111">Lucena United Doctors Hospital and Medical Center</a></li>
+        <li><a href="https://www.google.com/maps/place/Mount+Carmel+Diocesan+General+Hospital/@13.9408018,121.6111173,732m/data=!3m2!1e3!4b1!4m6!3m5!1s0x33bd4b5f34e309cd:0x34b62cd669289c5!8m2!3d13.9408018!4d121.6111173!16s%2Fg%2F1v42c9z0?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">Mount Carmel Diocesan General Hospital</a></li>
+        <li><a href="google.com/maps/place/St.+Anne+General+Hospital+Inc./@13.9408018,121.6111173,732m/data=!3m1!1e3!4m6!3m5!1s0x33bd4b5717c8b33d:0x83446dbfe08043c4!8m2!3d13.9375639!4d121.6186865!16s%2Fg%2F1vn161mg?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">St. Anne General Hospital</a></li>
+        <li><a href="https://www.google.com/maps/place/Allied+Care+Experts+(ACE)+Medical+Center+Sariaya/@13.9672342,121.5397595,732m/data=!3m2!1e3!4b1!4m6!3m5!1s0x33bd4d9b532eaa43:0x71be33f5f4389708!8m2!3d13.9672342!4d121.5423344!16s%2Fg%2F11q8wh8y65?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">JCE Medical Center Sariaya</a></li>
+        <li><a href="https://www.google.com/maps/place/Allied+Care+Experts+(ACE)+Medical+Center+Sariaya/@13.9672342,121.5397595,732m/data=!3m2!1e3!4b1!4m6!3m5!1s0x33bd4d9b532eaa43:0x71be33f5f4389708!8m2!3d13.9672342!4d121.5423344!16s%2Fg%2F11q8wh8y65?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D">EMG Hospital Sariaya</a></li>
         <li><a href="#">Gillen Mercedes Hospital</a></li>
         <li><a href="#">Tayabas Community Hospital</a></li>
         <li><a href="#">UnitedHealth Quezon Hospital and Medical Center</a></li>
@@ -204,5 +210,16 @@ document.getElementById("specialty").addEventListener("change", function() {
       </ul>
     </div>
   </footer>
+  <script>
+    const moreDoctors = document.getElementById("moreDoctors");
+    const toggleDoctors = document.getElementById("toggleDoctors");
+
+    toggleDoctors.addEventListener("click", () => {
+      const showMore = moreDoctors.hidden;
+      moreDoctors.hidden = !showMore;
+      toggleDoctors.setAttribute("aria-expanded", showMore);
+      toggleDoctors.textContent = showMore ? "SHOW FEWER DOCTORS" : "VIEW MORE DOCTORS";
+    });
+  </script>
 </body>
 </html>
