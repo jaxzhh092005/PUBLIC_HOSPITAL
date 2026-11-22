@@ -39,7 +39,7 @@ def login_view(request):
                     require_https=request.is_secure(),
                 ):
                     return redirect(next_url)
-                return redirect("landing")
+                return redirect("home:home")
             error = "Incorrect email or password."
     return render(request, "signin/login.html", {"error": error, "next": next_url})
 
