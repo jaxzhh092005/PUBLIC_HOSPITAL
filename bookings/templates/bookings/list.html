@@ -5,16 +5,21 @@
 
 {% block content %}
 <form method="get" class="booking-tools" role="search">
-  <div class="search-box">
+  <label class="search-box">
     <i class="bi bi-search" aria-hidden="true"></i>
     <input type="search" name="q" value="{{ q }}" placeholder="Search for your bookings ..." aria-label="Search your bookings">
-  </div>
+  </label>
 
-  <div class="filter-wrap" data-active="{% if status %}true{% endif %}">
-    <button type="button" class="filter-btn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel">
-      <i class="bi bi-sliders" aria-hidden="true"></i> FILTER
-    </button>
-    <div class="filter-panel" id="filterPanel" hidden>
+  <details class="filter-wrap" {% if status or selected_hospital %}open{% endif %}>
+    <summary class="filter-btn"><i class="bi bi-sliders" aria-hidden="true"></i> FILTER</summary>
+    <div class="filter-panel">
+      <label for="hospital">Hospital</label>
+      <select name="hospital" id="hospital" aria-label="Filter by hospital">
+        <option value="">All hospitals</option>
+        {% for hospital in hospitals %}
+          <option value="{{ hospital }}" {% if hospital == selected_hospital %}selected{% endif %}>{{ hospital }}</option>
+        {% endfor %}
+      </select>
       <label for="status">Status</label>
       <select name="status" id="status">
         <option value="">All</option>
@@ -24,7 +29,7 @@
       </select>
       <button type="submit" class="btn btn-sm">Apply</button>
     </div>
-  </div>
+  </details>
 </form>
 
 <section class="booking-list" aria-label="Your bookings">
@@ -61,31 +66,9 @@
   {% empty %}
   <div class="empty">
     <i class="bi bi-calendar2-x" aria-hidden="true"></i>
-    <p>{% if q or status %}No bookings match your search.{% else %}You have no bookings yet.{% endif %}</p>
+    <p>{% if q or status or selected_hospital %}No bookings match your search.{% else %}You have no bookings yet.{% endif %}</p>
     <a href="{% url 'home:home' %}" class="btn btn-sm">Book an appointment</a>
   </div>
   {% endfor %}
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  const btn = document.getElementById("filterBtn");
-  const panel = document.getElementById("filterPanel");
-  btn.addEventListener("click", () => {
-    const open = panel.hidden;
-    panel.hidden = !open;
-    btn.setAttribute("aria-expanded", open);
-  });
-  document.addEventListener("click", (e) => {
-    if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) {
-      panel.hidden = true; btn.setAttribute("aria-expanded", false);
-    }
-  });
-  // Keep the panel open after filtering so the active status is visible
-  if (btn.closest(".filter-wrap").dataset.active === "true") {
-    panel.hidden = false;
-    btn.setAttribute("aria-expanded", "true");
-  }
-</script>
 {% endblock %}

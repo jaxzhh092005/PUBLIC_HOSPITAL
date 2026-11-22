@@ -10,10 +10,11 @@ from appointments.models import Appointment
 
 
 class BookingAccessTests(TestCase):
-    def create_appointment(self, specialization, user=None):
+    def create_appointment(self, specialization, user=None, hospital_name=""):
         return Appointment.objects.create(
             user=user,
             specialization=specialization,
+            hospital_name=hospital_name,
             appointment_date=date.today(),
             last_name="Patient",
             first_name="Test",
@@ -47,6 +48,18 @@ class BookingAccessTests(TestCase):
         self.assertContains(response, "ACCOUNT_BOOKING")
         self.assertContains(response, "SESSION_BOOKING")
         self.assertNotContains(response, "OTHER_BOOKING")
+
+    def test_booking_list_filters_by_hospital(self):
+        patient = get_user_model().objects.create_user(username="patient", password="test")
+        self.create_appointment("GENERAL_MEDICINE", patient, hospital_name="North Hospital")
+        self.create_appointment("PEDIATRICS", patient, hospital_name="South Hospital")
+        self.client.force_login(patient)
+
+        response = self.client.get(reverse("bookings:list"), {"hospital": "North Hospital"})
+
+        self.assertContains(response, "GENERAL_MEDICINE")
+        self.assertNotContains(response, "PEDIATRICS")
+        self.assertContains(response, 'option value="North Hospital" selected')
 
     def test_patient_cannot_open_another_accounts_booking(self):
         patient = get_user_model().objects.create_user(username="patient", password="test")
