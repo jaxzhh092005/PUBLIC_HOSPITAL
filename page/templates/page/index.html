@@ -14,7 +14,7 @@
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="topbar">
-    <a class="logo" href="#" aria-label="Hospital Schedule home">
+    <a class="logo" href="{% url 'landing' %}" aria-label="Hospital Schedule home">
        <img src="{% static 'images/logo.png' %}"
          alt="Hospital Schedule Logo"
          class="logo-img">
@@ -52,29 +52,24 @@
                 Select Doctor or Specialist
             </option>
 
-            <option value="general-medicine">General Medicine</option>
-            <option value="family-medicine">Family Medicine</option>
-            <option value="neurosurgery">Neurosurgery</option>
-            <option value="neurology">Neurology</option>
-            <option value="cardiology">Cardiology</option>
-            <option value="pediatrics">Pediatrics</option>
-            <option value="dermatology">Dermatology</option>
-            <option value="orthopedic-surgery">Orthopedic Surgery</option>
-            <option value="ophthalmology">Ophthalmology</option>
-            <option value="urology">Urology</option>
+            <option value="General Medicine">General Medicine</option>
+            <option value="Family Medicine">Family Medicine</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Skin &amp; Dermatology">Dermatology</option>
+            <option value="Orthopedic Surgery">Orthopedic Surgery</option>
+            <option value="Eye and Vision">Ophthalmology</option>
+            <option value="Nephrology">Urology</option>
         </select>
 
     </form>
 
 <script>
 document.getElementById("specialty").addEventListener("change", function() {
-
-    const specialty = this.value;
-
-    if (specialty) {
-        window.location.href = "/doctors/" + specialty + "/";
-    }
-
+    if (!this.value) return;
+    const params = new URLSearchParams({ specialty: this.value });
+    window.location.href = "{% url 'doctors:list' %}?" + params.toString();
 });
 </script>
 
@@ -103,18 +98,18 @@ document.getElementById("specialty").addEventListener("change", function() {
 
       <p class="sub">People have been looking for these specialties.</p>
       <ul class="tiles">
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩺</span><span class="lbl">Primary care &amp; general medicine</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🌸</span><span class="lbl">Women's &amp; gender health</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧸</span><span class="lbl">Pediatrics</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes &amp; endocrinology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">👁️</span><span class="lbl">Eye &amp; vision care</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">❤️</span><span class="lbl">Heart &amp; cardiology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧴</span><span class="lbl">Skin &amp; dermatology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🫁</span><span class="lbl">Lungs, chest &amp; pulmonology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🍽️</span><span class="lbl">Digestive &amp; gastroenterology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">👂</span><span class="lbl">Ear, nose &amp; throat</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💧</span><span class="lbl">Kidney &amp; urology</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧠</span><span class="lbl">Neurology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=General%20Medicine"><span class="ico" aria-hidden="true">🩺</span><span class="lbl">Primary care &amp; general medicine</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=OB-Gyn"><span class="ico" aria-hidden="true">🌸</span><span class="lbl">Women's &amp; gender health</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Pediatrics"><span class="ico" aria-hidden="true">🧸</span><span class="lbl">Pediatrics</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Endocrinology"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes &amp; endocrinology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Eye%20and%20Vision"><span class="ico" aria-hidden="true">👁️</span><span class="lbl">Eye &amp; vision care</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Cardiology"><span class="ico" aria-hidden="true">❤️</span><span class="lbl">Heart &amp; cardiology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Dermatology"><span class="ico" aria-hidden="true">🧴</span><span class="lbl">Skin &amp; dermatology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Pulmonology"><span class="ico" aria-hidden="true">🫁</span><span class="lbl">Lungs, chest &amp; pulmonology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Gastroenterology"><span class="ico" aria-hidden="true">🍽️</span><span class="lbl">Digestive &amp; gastroenterology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=ENT"><span class="ico" aria-hidden="true">👂</span><span class="lbl">Ear, nose &amp; throat</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Nephrology"><span class="ico" aria-hidden="true">💧</span><span class="lbl">Kidney &amp; urology</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Neurology"><span class="ico" aria-hidden="true">🧠</span><span class="lbl">Neurology</span></a></li>
       </ul>
     </section>
 
@@ -123,18 +118,18 @@ document.getElementById("specialty").addEventListener("change", function() {
       <h2 id="cond-title">Common Conditions</h2>
       <p class="sub">Easily access doctors treating these conditions.</p>
       <ul class="tiles">
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">😣</span><span class="lbl">Acne &amp; skin problems</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🦴</span><span class="lbl">Arthritis</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🧍</span><span class="lbl">Back pain</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🎗️</span><span class="lbl">Cancer</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💭</span><span class="lbl">Depression, anxiety &amp; mental health</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🫀</span><span class="lbl">High blood pressure &amp; hypertension</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">💪</span><span class="lbl">Muscle &amp; joint pain</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🚻</span><span class="lbl">Urinary tract infection</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🌷</span><span class="lbl">PCOS</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🤱</span><span class="lbl">Breastfeeding</span></a></li>
-        <li><a class="tile" href="#"><span class="ico" aria-hidden="true">🦋</span><span class="lbl">Thyroid</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Dermatology"><span class="ico" aria-hidden="true">😣</span><span class="lbl">Acne &amp; skin problems</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Orthopedic%20Surgery"><span class="ico" aria-hidden="true">🦴</span><span class="lbl">Arthritis</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Orthopedic%20Surgery"><span class="ico" aria-hidden="true">🧍</span><span class="lbl">Back pain</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=General%20Medicine"><span class="ico" aria-hidden="true">🎗️</span><span class="lbl">Cancer</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Neurology"><span class="ico" aria-hidden="true">💭</span><span class="lbl">Depression, anxiety &amp; mental health</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Endocrinology"><span class="ico" aria-hidden="true">🩸</span><span class="lbl">Diabetes</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Cardiology"><span class="ico" aria-hidden="true">🫀</span><span class="lbl">High blood pressure &amp; hypertension</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Orthopedic%20Surgery"><span class="ico" aria-hidden="true">💪</span><span class="lbl">Muscle &amp; joint pain</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Nephrology"><span class="ico" aria-hidden="true">🚻</span><span class="lbl">Urinary tract infection</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=OB-Gyn"><span class="ico" aria-hidden="true">🌷</span><span class="lbl">PCOS</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=OB-Gyn"><span class="ico" aria-hidden="true">🤱</span><span class="lbl">Breastfeeding</span></a></li>
+        <li><a class="tile" href="{% url 'doctors:list' %}?specialty=Endocrinology"><span class="ico" aria-hidden="true">🦋</span><span class="lbl">Thyroid</span></a></li>
       </ul>
     </section>
 

@@ -1,26 +1,20 @@
+from django.conf import settings
 from django.db import models
-from accounts.models import User
 from hospitals.models import Hospital
 
 
 class Doctor(models.Model):
-
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE
-    )
-
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hospital = models.ForeignKey(
         Hospital,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="doctors",
     )
-
     specialization = models.CharField(max_length=100)
-
     license_number = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.user.get_full_name()
+        return f"Dr. {self.user.get_full_name() or self.user.username}"
 
 
 class Availability(models.Model):

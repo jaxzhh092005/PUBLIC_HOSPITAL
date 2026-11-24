@@ -1,26 +1,26 @@
 {% extends "page/base.html" %}
 {% load static %}
 {% block title %}Doctors{% endblock %}
+{% block body_class %}doctor-list-page{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'doctors/css/doctors.css' %}">{% endblock %}
 
 {% block content %}
 <section class="doctor-directory" aria-label="Find a doctor">
   <form method="get" class="doctor-tools" role="search">
+    {{ form.specialty }}
     <label class="doctor-search">
       <i class="bi bi-search" aria-hidden="true"></i>
-      <input type="search" name="q" value="{{ q }}" placeholder="Search by specialty, hospital, or doctor name" aria-label="Search doctors">
+      {{ form.q }}
     </label>
-    <label class="location-select">
-      <i class="bi bi-geo-alt" aria-hidden="true"></i>
-      <select name="location" aria-label="Select hospital">
-        <option value="">All hospitals</option>
-        {% for hospital in hospitals %}
-          <option value="{{ hospital.pk }}" {% if location == hospital.pk|stringformat:"s" %}selected{% endif %}>{{ hospital.name }}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <button class="btn" type="submit">Search</button>
+    <button class="doctor-search-button" type="submit">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      Search
+    </button>
   </form>
+
+  {% if form.errors %}
+    <p class="doctor-error" role="alert">Please check your search and try again.</p>
+  {% endif %}
 
   <div class="doctor-list">
     {% for doctor in doctors %}
@@ -29,18 +29,66 @@
           <i class="bi bi-person-fill"></i>
         </div>
         <div class="doctor-info">
-          <h1>Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h1>
+          <h2>Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h2>
           <p class="doctor-specialty">{{ doctor.specialization }}</p>
-          <p class="doctor-hospital"><i class="bi bi-hospital" aria-hidden="true"></i> {{ doctor.hospital.name }}</p>
+          <p class="doctor-consultation">
+            <i class="bi bi-hospital" aria-hidden="true"></i>
+            {{ doctor.hospital.name }}
+          </p>
         </div>
-        <a class="btn doctor-book" href="{% url 'home:home' %}">Book appointment</a>
+        <div class="doctor-schedule">
+          <i class="bi bi-calendar-check" aria-hidden="true"></i>
+          <div>
+            <strong>Weekly availability</strong>
+            {% with schedule=doctor.availability_set.all|first %}
+              {% if schedule %}
+                <span>{{ schedule.get_day_display }}</span>
+                <span>{{ schedule.start_time|time:"g:i A" }} – {{ schedule.end_time|time:"g:i A" }}</span>
+              {% else %}
+                <span>Schedule not posted</span>
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+        <div class="doctor-actions">
+          <a class="doctor-profile-link" href="{% url 'doctors:profile' doctor.pk %}">
+            <i class="bi bi-person-circle" aria-hidden="true"></i> View profile
+          </a>
+          <a class="btn doctor-book" href="{% url 'home:home' %}">Book appointment</a>
+        </div>
       </article>
     {% empty %}
       <div class="doctor-empty">
         <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
-        <p>{% if q or location %}No doctors match your search.{% else %}No doctors are listed yet.{% endif %}</p>
+        <p>{% if searched %}No doctors match your search.{% else %}No doctors are listed yet.{% endif %}</p>
       </div>
     {% endfor %}
   </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="doctor-pagination" aria-label="Doctor list pages">
+    {% if previous_page_url %}
+      <a class="doctor-page-arrow" href="{{ previous_page_url }}" aria-label="Previous page">‹</a>
+    {% else %}
+      <span class="doctor-page-arrow is-disabled" aria-disabled="true" aria-label="Previous page">‹</span>
+    {% endif %}
+
+    {% for page in page_links %}
+      {% if page.is_ellipsis %}
+        <span class="doctor-page-ellipsis" aria-hidden="true">…</span>
+      {% elif page.number == page_obj.number %}
+        <span class="doctor-page-number is-current" aria-current="page">{{ page.number }}</span>
+      {% else %}
+        <a class="doctor-page-number" href="{{ page.url }}" aria-label="Page {{ page.number }}">{{ page.number }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if next_page_url %}
+      <a class="doctor-page-arrow" href="{{ next_page_url }}" aria-label="Next page">›</a>
+    {% else %}
+      <span class="doctor-page-arrow is-disabled" aria-disabled="true" aria-label="Next page">›</span>
+    {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}

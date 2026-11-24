@@ -54,7 +54,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--teal); outline-
   padding: .25rem 0; border-bottom: 2px solid transparent;
 }
 .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--teal); }
-.nav-links a.nav-settings { color: var(--ink); font-size: 1.1rem; }
+.nav-links a.nav-settings {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
+  color: var(--ink); font-size: 1.1rem;
+}
+.nav-links a.nav-settings:hover { background: var(--teal-light); color: var(--teal-dark); }
 .nav-toggle { display: none; background: none; border: 0; font-size: 1.6rem; color: var(--teal); cursor: pointer; }
 
 /* Buttons */

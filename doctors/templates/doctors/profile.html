@@ -1,0 +1,31 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'doctors/css/doctors.css' %}">{% endblock %}
+
+{% block content %}
+<section class="doctor-profile-page" aria-label="Doctor profile">
+  <a class="doctor-back-link" href="{% url 'doctors:list' %}">
+    <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to doctors
+  </a>
+  <article class="doctor-profile-card">
+    <div class="doctor-profile-avatar" aria-hidden="true">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    <div>
+      <h1>Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h1>
+      <p class="doctor-specialty">{{ doctor.specialization }}</p>
+      <p class="doctor-hospital"><i class="bi bi-hospital" aria-hidden="true"></i> {{ doctor.hospital.name }}</p>
+    </div>
+  </article>
+
+  <section class="doctor-profile-schedule" aria-labelledby="availability-heading">
+    <h2 id="availability-heading"><i class="bi bi-calendar-check" aria-hidden="true"></i> Weekly availability</h2>
+    {% for schedule in doctor.availability_set.all %}
+      <p><strong>{{ schedule.get_day_display }}</strong> · {{ schedule.start_time|time:"g:i A" }} – {{ schedule.end_time|time:"g:i A" }}</p>
+    {% empty %}
+      <p>Availability has not been posted yet.</p>
+    {% endfor %}
+  </section>
+</section>
+{% endblock %}

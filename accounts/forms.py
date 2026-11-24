@@ -48,18 +48,21 @@ class _PasswordConfirmForm(forms.Form):
 
 class MobileChangeForm(_PasswordConfirmForm):
     mobile = forms.CharField(
-        label="New mobile number", max_length=20,
-        widget=forms.TextInput(attrs={**INPUT, "inputmode": "tel", "placeholder": "9123456789"}),
+        label="New mobile number", max_length=11, strip=False,
+        widget=forms.TextInput(attrs={
+            **INPUT, "inputmode": "numeric", "pattern": "[0-9]*",
+            "data-digits-only": "true", "placeholder": "9123456789",
+        }),
     )
     field_order = ["mobile", "password"]
 
     def clean_mobile(self):
-        raw = re.sub(r"[\s-]", "", self.cleaned_data["mobile"])
-        for prefix in ("+63", "0"):
-            if raw.startswith(prefix):
-                raw = raw[len(prefix):]
-                break
-        if not re.fullmatch(r"9\d{9}", raw):
+        raw = self.cleaned_data["mobile"]
+        if not re.fullmatch(r"[0-9]+", raw):
+            raise forms.ValidationError("Enter digits only.")
+        if raw.startswith("0"):
+            raw = raw[1:]
+        if not re.fullmatch(r"9[0-9]{9}", raw):
             raise forms.ValidationError("Enter a valid Philippine mobile number, e.g. 9123456789.")
         return "+63" + raw
 

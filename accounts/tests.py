@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from .forms import MobileChangeForm
+
 
 class AccountURLTests(TestCase):
     def test_account_edit_route_requires_authentication(self):
