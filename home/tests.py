@@ -8,6 +8,10 @@ class HomePageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Schedule Your Appointment")
+        self.assertContains(
+            response,
+            f'href="{reverse("landing")}" class="navbar-brand"',
+        )
         self.assertContains(response, "/static/css/base.css")
         self.assertContains(response, "/static/home/css/home.css")
         self.assertContains(response, reverse("home:home"))

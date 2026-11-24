@@ -80,8 +80,15 @@ class InformationForm(forms.Form):
     email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={"class": "field-input"}),
                              error_messages={"required": REQ, "invalid": "Enter a valid email address."})
     contact_number = forms.CharField(
-        label="Contact Number", max_length=20, widget=_input("09XXXXXXXXX", inputmode="tel"),
-        validators=[RegexValidator(r"^(09|\+639)\d{9}$", "Use a Philippine mobile number, e.g. 09123456789.")],
+        label="Contact Number", max_length=12, strip=False,
+                                 widget=_input(
+                                     "09XXXXXXXXX", inputmode="numeric", pattern="[0-9]*",
+                                     **{"data-digits-only": "true"},
+                                 ),
+        validators=[RegexValidator(
+            r"^(09[0-9]{9}|639[0-9]{9})$",
+            "Use a Philippine mobile number, e.g. 09123456789.",
+        )],
         error_messages={"required": REQ},
     )
 
@@ -102,9 +109,6 @@ class InformationForm(forms.Form):
         if value > timezone.localdate():
             raise forms.ValidationError("Birthdate cannot be in the future.")
         return value
-
-    def clean_contact_number(self):
-        return self.cleaned_data["contact_number"].replace(" ", "").replace("-", "")
 
 
 class DocumentsForm(forms.Form):

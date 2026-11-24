@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from .forms import MobileChangeForm
+
 
 class AccountURLTests(TestCase):
     def test_account_edit_route_requires_authentication(self):
@@ -123,3 +125,35 @@ class AccountURLTests(TestCase):
             self.client.get(reverse("accounts:detail")),
             f'href="{reverse("accounts:edit")}" class="acc-icon" aria-label="Edit account"',
         )
+
+    def test_mobile_change_rejects_non_digits(self):
+        user_model = get_user_model()
+        user = user_model.objects.create_user(
+            username="mobile@example.com",
+            email="mobile@example.com",
+            password="secret123",
+        )
+        for mobile in ("91234a6789", "9123-56789"):
+            with self.subTest(mobile=mobile):
+                form = MobileChangeForm(
+                    {"mobile": mobile, "password": "secret123"},
+                    user=user,
+                )
+
+                self.assertFalse(form.is_valid())
+                self.assertIn("Enter digits only.", form.errors["mobile"])
+
+    def test_mobile_change_accepts_digits_only_and_normalizes_number(self):
+        user_model = get_user_model()
+        user = user_model.objects.create_user(
+            username="mobile@example.com",
+            email="mobile@example.com",
+            password="secret123",
+        )
+        form = MobileChangeForm(
+            {"mobile": "09123456789", "password": "secret123"},
+            user=user,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["mobile"], "+639123456789")

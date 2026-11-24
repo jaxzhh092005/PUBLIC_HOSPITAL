@@ -14,7 +14,7 @@
     <form method="post" action="{% url 'home:home' %}">
       {% csrf_token %}
       <label class="appt-option">
-        <input type="radio" name="appointment_type" value="clinical" checked>
+        <input type="radio" name="appointment_type" value="clinical">
         <span class="appt-title">Clinical Appointment</span>
         <span class="appt-sub">OPD/Outpatient Consultation</span>
       </label>

@@ -10,12 +10,38 @@
 .schedule-head p { font-size: .8rem; opacity: .9; margin-top: .15rem; }
 .schedule-body { padding: 2.25rem 2.5rem 2rem; }
 .appt-option {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; gap: .2rem;
   padding: 1.5rem 1rem; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer;
+  transition: border-color .15s, background-color .15s, box-shadow .15s, transform .15s;
 }
-.appt-option:has(input:checked) { border-color: var(--teal); background: var(--teal-light); }
-.appt-option input { position: absolute; opacity: 0; pointer-events: none; }
+.appt-option:hover {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 4px 12px rgb(0 115 99 / 14%);
+}
+.appt-option:active { transform: scale(.995); }
+.appt-option:has(input:checked) {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+.appt-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
 .appt-option:has(input:focus-visible) { outline: 2px solid var(--teal); outline-offset: 3px; }
 .appt-title { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 1.6rem; color: var(--teal); }
 .appt-sub { font-size: .8rem; color: var(--muted); }
-.schedule-actions { display: flex; justify-content: center; margin-top: 1.75rem; }
+.schedule-actions { display: none; justify-content: center; margin-top: 1.75rem; }
+.schedule-body form:has(.appt-option input:checked) .schedule-actions {
+  display: flex;
+  animation: show-next .18s ease-out;
+}
+@keyframes show-next {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
