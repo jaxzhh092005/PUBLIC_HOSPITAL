@@ -1,6 +1,6 @@
-.account { max-width: 520px; margin: 0 auto; }
+.account { width: 100%; }
 
-/* Header: icon - title - icon */
+/* Header: back/edit controls at opposite edges */
 .acc-head { display: flex; align-items: center; justify-content: space-between; margin: 0 -.25rem 1.5rem; }
 .acc-head h1 { font-size: .8rem; font-weight: 600; color: var(--muted); }
 .acc-icon {
@@ -32,7 +32,10 @@
 .acc-change:hover { background: var(--teal-dark); }
 
 /* Logout */
-.acc-logout { margin-top: 3rem; border-top: 1px solid #9fd5cc; padding-top: .8rem; }
+.acc-logout {
+  display: flex; justify-content: flex-end; width: 100%;
+  margin-top: 3rem; border-top: 1px solid #9fd5cc; padding-top: .8rem;
+}
 .acc-logout button {
   display: inline-flex; align-items: center; gap: .4rem; border: 0; background: none; cursor: pointer;
   font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: .8rem; color: var(--ink);

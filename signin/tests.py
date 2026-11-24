@@ -25,7 +25,7 @@ class SigninPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("signin:login"))
 
-    def test_signin_without_next_redirects_to_home(self):
+    def test_signin_without_next_redirects_to_authenticated_home(self):
         user_model = get_user_model()
         user_model.objects.create_user(
             username="user@example.com",
@@ -36,9 +36,11 @@ class SigninPageTests(TestCase):
         response = self.client.post(reverse("signin:login"), {
             "email": "user@example.com",
             "password": "secret123",
-        })
+        }, follow=True)
 
         self.assertRedirects(response, reverse("home:home"))
+        self.assertContains(response, "Schedule Your Appointment")
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
 
     def test_invalid_email_formats_show_an_error(self):
         requests = (

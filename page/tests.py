@@ -10,7 +10,8 @@ class LandingPageTests(TestCase):
         self.assertContains(response, f'<a class="logo" href="{reverse("landing")}"')
         self.assertContains(response, 'id="toggleDoctors" type="button"')
         self.assertContains(response, 'aria-controls="moreDoctors" aria-expanded="false"')
-        self.assertContains(response, '<li class="doc" id="moreDoctors" hidden>')
+        self.assertContains(response, '<li class="doc" id="moreDoctors" hidden style="display: none;">')
+        self.assertContains(response, 'moreDoctors.style.display = showMore ? "grid" : "none";')
         self.assertContains(response, "Dr Andrea Santos")
         self.assertContains(response, "SHOW FEWER DOCTORS")
 
