@@ -4,7 +4,11 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from doctors.models import Doctor
+from hospitals.models import Hospital
+
 from .forms import MobileChangeForm
+from .models import Profile
 
 
 class AccountURLTests(TestCase):
@@ -144,3 +148,70 @@ class AdminAccessTests(TestCase):
                     self.assertTrue(admin.site.is_registered(model))
                     url = reverse(f"admin:{app_label}_{model._meta.model_name}_changelist")
                     self.assertEqual(self.client.get(url).status_code, 200)
+
+    def test_admin_dashboard_uses_standalone_interface_and_links_to_workflows(self):
+        admin_user = get_user_model().objects.create_superuser(
+            username="admin@example.com",
+            email="admin@example.com",
+            password="secret123",
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "hospital_admin/dashboard.html")
+        self.assertContains(response, "CareBoard")
+        self.assertContains(response, "Add doctor")
+        self.assertContains(response, reverse("admin-doctor-add"))
+        self.assertContains(response, reverse("admin:doctors_availability_changelist"))
+        self.assertContains(response, reverse("admin:appointments_appointment_changelist"))
+        self.assertContains(response, reverse("admin:hospitals_hospital_changelist"))
+
+    def test_dashboard_doctor_form_creates_doctor_and_login(self):
+        admin_user = get_user_model().objects.create_superuser(
+            username="admin@example.com",
+            email="admin@example.com",
+            password="secret123",
+        )
+        hospital = Hospital.objects.create(
+            name="Central Hospital",
+            address="Main Street",
+            phone="123456789",
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.post(reverse("admin-doctor-add"), {
+            "first_name": "Morgan",
+            "last_name": "Lee",
+            "username": "morgan.lee",
+            "email": "morgan@example.com",
+            "hospital": hospital.pk,
+            "specialization": "Cardiology",
+            "license_number": "LIC-001",
+            "password": "Strong!Password492",
+            "password_confirm": "Strong!Password492",
+        })
+
+        self.assertRedirects(response, reverse("admin-doctors"))
+        doctor = Doctor.objects.get(user__username="morgan.lee")
+        self.assertEqual(doctor.user.role, "DOCTOR")
+        self.assertEqual(doctor.hospital, hospital)
+        self.assertTrue(doctor.user.check_password("Strong!Password492"))
+        self.assertTrue(Profile.objects.filter(user=doctor.user).exists())
+
+    def test_admin_dashboard_hides_shortcuts_without_model_permissions(self):
+        staff_user = get_user_model().objects.create_user(
+            username="staff@example.com",
+            email="staff@example.com",
+            password="secret123",
+            role="ADMIN",
+            is_staff=True,
+        )
+        self.client.force_login(staff_user)
+
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, reverse("admin-doctor-add"))
+        self.assertNotContains(response, reverse("admin:appointments_appointment_changelist"))

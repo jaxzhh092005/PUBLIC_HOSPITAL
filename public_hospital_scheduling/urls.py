@@ -18,9 +18,20 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+from public_hospital_scheduling.admin_dashboard import dashboard, doctor_create, doctor_list
+from doctors.portal import accept_appointment, doctor_dashboard
 from nurse.views import nurse_dashboard
 
 urlpatterns = [
+    path('HospitalSchedulingAdmin/', dashboard, name='admin-dashboard'),
+    path('HospitalSchedulingAdmin/doctors/', doctor_list, name='admin-doctors'),
+    path('HospitalSchedulingAdmin/doctors/add/', doctor_create, name='admin-doctor-add'),
+    path('HospitalSchedulingAdmin/doctor/', doctor_dashboard, name='doctor-dashboard'),
+    path(
+        'HospitalSchedulingAdmin/doctor/queue/<int:appointment_id>/accept/',
+        accept_appointment,
+        name='doctor-accept-appointment',
+    ),
     path('admin/', admin.site.urls),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -38,3 +49,8 @@ urlpatterns += static(
     settings.MEDIA_URL + 'doctor_photos/',
     document_root=settings.MEDIA_ROOT / 'doctor_photos',
 )
+
+
+admin.site.site_header = "Hospital Schedule Admin"
+admin.site.site_title = "Hospital Schedule"
+admin.site.index_title = "Manage doctors, appointments and hospitals"

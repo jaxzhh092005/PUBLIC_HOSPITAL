@@ -31,11 +31,14 @@
     region: "{{ form.region.value|default:''|escapejs }}",
     province: "{{ form.province.value|default:''|escapejs }}",
     municipality: "{{ form.municipality.value|default:''|escapejs }}",
+    barangay: "{{ form.barangay.value|default:''|escapejs }}",
+    
   };
   const $ = (id) => document.getElementById(id);
   const regionSel = $("{{ form.region.id_for_label }}");
   const provSel = $("{{ form.province.id_for_label }}");
   const muniSel = $("{{ form.municipality.id_for_label }}");
+  const barangaySel = $("{{ form.barangay.id_for_label }}");
 
   const getJSON = async (path) => {
     const res = await fetch(`${API}${path}`);

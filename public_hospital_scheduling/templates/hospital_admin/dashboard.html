@@ -1,0 +1,85 @@
+{% extends "hospital_admin/base.html" %}
+
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<section class="welcome-row">
+  <div>
+    <p class="eyebrow">OVERVIEW</p>
+    <h1>Good day, {{ request.user.first_name|default:request.user.username }}</h1>
+    <p class="page-subtitle">Here’s what’s happening across your hospital today.</p>
+  </div>
+  {% if perms.doctors.add_doctor and perms.accounts.add_user %}
+    <a class="button button-primary" href="{% url 'admin-doctor-add' %}">
+      <span aria-hidden="true">+</span> Add doctor
+    </a>
+  {% endif %}
+</section>
+
+<section class="stats-grid" aria-label="Hospital summary">
+  {% for stat in stats %}
+    <article class="stat-card">
+      <div class="stat-top"><span class="stat-label">{{ stat.label }}</span><span class="stat-icon">{{ stat.icon }}</span></div>
+      <strong class="stat-value">{{ stat.value }}</strong>
+      <span class="stat-footnote">Across your hospital</span>
+    </article>
+  {% empty %}
+    <div class="empty-state">Your account does not currently have permission to view summary statistics.</div>
+  {% endfor %}
+</section>
+
+<section class="workspace-grid">
+  <div class="panel appointments-panel">
+    <div class="panel-heading">
+      <div><p class="eyebrow">THE LATEST</p><h2>Recent appointments</h2></div>
+      {% if perms.appointments.view_appointment %}
+        <a class="text-link" href="{% url 'admin:appointments_appointment_changelist' %}">View all <span aria-hidden="true">&rarr;</span></a>
+      {% endif %}
+    </div>
+    {% if perms.appointments.view_appointment %}
+      {% if recent_appointments %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Patient</th><th>Specialty</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for appointment in recent_appointments %}
+                <tr>
+                  <td><strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong><small>{{ appointment.email }}</small></td>
+                  <td>{{ appointment.specialization }}</td>
+                  <td>{{ appointment.appointment_date|date:"M j, Y" }}</td>
+                  <td><span class="status status-{{ appointment.status|lower }}">{{ appointment.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">No appointment requests yet.</div>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">You don’t have permission to view appointment details.</div>
+    {% endif %}
+  </div>
+
+  <aside class="panel shortcuts-panel">
+    <div class="panel-heading"><div><p class="eyebrow">SHORTCUTS</p><h2>Quick actions</h2></div></div>
+    <div class="shortcut-list">
+      {% if perms.doctors.add_doctor and perms.accounts.add_user %}
+        <a class="shortcut" href="{% url 'admin-doctor-add' %}"><span class="shortcut-icon teal">+</span><span><strong>Add a doctor</strong><small>Create a profile and login</small></span><b aria-hidden="true">&rarr;</b></a>
+      {% endif %}
+      {% if perms.doctors.view_doctor %}
+        <a class="shortcut" href="{% url 'admin-doctors' %}"><span class="shortcut-icon blue">&#9823;</span><span><strong>Doctor directory</strong><small>Browse your care team</small></span><b aria-hidden="true">&rarr;</b></a>
+      {% endif %}
+      {% if perms.doctors.add_availability or perms.doctors.change_availability %}
+        <a class="shortcut" href="{% url 'admin:doctors_availability_changelist' %}"><span class="shortcut-icon purple">&#9719;</span><span><strong>Manage schedules</strong><small>Set weekly availability</small></span><b aria-hidden="true">&rarr;</b></a>
+      {% endif %}
+      {% if perms.appointments.view_appointment %}
+        <a class="shortcut" href="{% url 'admin:appointments_appointment_changelist' %}"><span class="shortcut-icon orange">&#9638;</span><span><strong>Review appointments</strong><small>Check requests and status</small></span><b aria-hidden="true">&rarr;</b></a>
+      {% endif %}
+      {% if perms.hospitals.add_hospital or perms.hospitals.change_hospital %}
+        <a class="shortcut" href="{% url 'admin:hospitals_hospital_changelist' %}"><span class="shortcut-icon green">&#8962;</span><span><strong>Manage hospitals</strong><small>Update facility details</small></span><b aria-hidden="true">&rarr;</b></a>
+      {% endif %}
+    </div>
+  </aside>
+</section>
+{% endblock %}

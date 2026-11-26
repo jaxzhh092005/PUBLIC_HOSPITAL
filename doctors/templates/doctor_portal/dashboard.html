@@ -1,0 +1,188 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if section == "appointments" %}Appointments{% elif section == "records" %}Patient records{% elif section == "queue" %}Consult queue{% else %}Availability{% endif %} · Doctor workspace</title>
+  <link rel="stylesheet" href="{% static 'doctors/css/portal.css' %}">
+</head>
+<body>
+  <header class="portal-header">
+    <a class="portal-brand" href="{% url 'doctor-dashboard' %}" aria-label="Doctor workspace home">
+      <img src="{% static 'images/logo.png' %}" alt="">
+      <span>DOCTOR<br><strong>WORKSPACE</strong></span>
+    </a>
+    <nav class="portal-nav" aria-label="Doctor workspace">
+      <a href="{% url 'doctor-dashboard' %}?section=appointments" {% if section == "appointments" %}aria-current="page"{% endif %}>Appointments</a>
+      <a href="{% url 'doctor-dashboard' %}?section=records" {% if section == "records" %}aria-current="page"{% endif %}>Records</a>
+      <a href="{% url 'doctor-dashboard' %}?section=queue" {% if section == "queue" %}aria-current="page"{% endif %}>Queue</a>
+      <a href="{% url 'doctor-dashboard' %}?section=availability" {% if section == "availability" %}aria-current="page"{% endif %}>Availability</a>
+    </nav>
+    <div class="portal-user">
+      <span class="doctor-avatar">{{ doctor.user.first_name|default:doctor.user.username|slice:":1"|upper }}</span>
+      <span class="doctor-user-name">Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</span>
+      <a class="logout-button" href="{% url 'signin:logout' %}" aria-label="Log out">↗</a>
+    </div>
+  </header>
+
+  <main class="portal-main">
+    {% if messages %}
+      <div class="message-stack">
+        {% for message in messages %}<div class="notice notice-{{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+
+    {% if section == "appointments" %}
+      <section class="section-banner">
+        <div><h1>Appointments</h1><p>Your patient schedule at {{ doctor.hospital.name }}</p></div>
+        <span class="banner-date">{{ today|date:"l, F j" }}</span>
+      </section>
+      <section class="content-card">
+        <nav class="subnav" aria-label="Appointment list">
+          <a href="{% url 'doctor-dashboard' %}?section=appointments&view=today" {% if appointment_view == "today" %}aria-current="page"{% endif %}>Today</a>
+          <a href="{% url 'doctor-dashboard' %}?section=appointments&view=upcoming" {% if appointment_view == "upcoming" %}aria-current="page"{% endif %}>Upcoming</a>
+          <a href="{% url 'doctor-dashboard' %}?section=appointments&view=completed" {% if appointment_view == "completed" %}aria-current="page"{% endif %}>Completed</a>
+        </nav>
+        {% if appointments %}
+          <div class="table-wrap">
+            <table class="portal-table">
+              <thead><tr><th>Time</th><th>Patient</th><th>Reason for visit</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                {% for appointment in appointments %}
+                  <tr>
+                    <td class="time-cell">{% if appointment.appointment_time %}{{ appointment.appointment_time|time:"g:i A" }}{% else %}Time TBD{% endif %}</td>
+                    <td><strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong><small>{{ appointment.email }}</small></td>
+                    <td>{{ appointment.specialization }}</td>
+                    <td><span class="status status-{{ appointment.status }}">{{ appointment.get_status_display }}</span></td>
+                    <td>
+                      <details class="row-details">
+                        <summary class="small-button">Open</summary>
+                        <div class="details-popover">
+                          <strong>{{ appointment.first_name }} {{ appointment.middle_name }} {{ appointment.last_name }} {{ appointment.suffix }}</strong>
+                          <span>{{ appointment.contact_number }}</span>
+                          <span>{{ appointment.street }}, {{ appointment.barangay }}, {{ appointment.municipality }}</span>
+                          <span>Appointment date: {{ appointment.appointment_date|date:"M j, Y" }}</span>
+                        </div>
+                      </details>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><h2>No appointments in this list</h2><p>Appointments assigned to you will appear here.</p></div>
+        {% endif %}
+      </section>
+
+    {% elif section == "queue" %}
+      <section class="section-banner">
+        <div><h1>Consult queue</h1><p>New appointment requests for your hospital and specialty</p></div>
+        <span class="queue-count">{{ queue|length }} waiting</span>
+      </section>
+      <section class="content-card queue-card">
+        {% if queue %}
+          <div class="queue-list">
+            {% for appointment in queue %}
+              <article class="queue-row">
+                <span class="patient-avatar">{{ appointment.first_name|slice:":1"|upper }}</span>
+                <div class="queue-patient"><strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong><small>{{ appointment.specialization }} · {{ appointment.appointment_date|date:"M j, Y" }}{% if appointment.appointment_time %} at {{ appointment.appointment_time|time:"g:i A" }}{% endif %}</small></div>
+                <span class="status status-pending">Awaiting review</span>
+                <form method="post" action="{% url 'doctor-accept-appointment' appointment.id %}">
+                  {% csrf_token %}
+                  <button class="accept-button" type="submit">Accept</button>
+                </form>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><h2>Queue is clear</h2><p>New matching appointment requests will appear here.</p></div>
+        {% endif %}
+      </section>
+
+    {% elif section == "records" %}
+      <section class="section-banner">
+        <div><h1>Patient records</h1><p>Appointment history and files for patients assigned to you</p></div>
+        <span class="banner-note">Private care workspace</span>
+      </section>
+      <section class="content-card">
+        <div class="records-heading"><div><h2>Visit history</h2><p>Patients from your assigned appointments</p></div>
+          <form class="search-form" method="get">
+            <input type="hidden" name="section" value="records">
+            <label class="sr-only" for="record-search">Search patient records</label>
+            <input id="record-search" type="search" name="q" value="{{ search }}" placeholder="Search patient name or email">
+            <button type="submit">Search</button>
+          </form>
+        </div>
+        {% if records %}
+          <div class="table-wrap">
+            <table class="portal-table">
+              <thead><tr><th>Patient</th><th>Visit date</th><th>Specialty</th><th>Status</th><th>Contact</th></tr></thead>
+              <tbody>
+                {% for record in records %}
+                  <tr>
+                    <td><strong>{{ record.first_name }} {{ record.last_name }}</strong><small>{{ record.gender }} · Born {{ record.birthdate|date:"M j, Y" }}</small></td>
+                    <td>{{ record.appointment_date|date:"M j, Y" }}</td>
+                    <td>{{ record.specialization }}</td>
+                    <td><span class="status status-{{ record.status }}">{{ record.get_status_display }}</span></td>
+                    <td><a class="contact-link" href="mailto:{{ record.email }}">{{ record.email }}</a><small>{{ record.contact_number }}</small></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state"><span class="empty-icon" aria-hidden="true">+</span><h2>No patient history yet</h2><p>Assigned appointments will appear in this record list.</p></div>
+        {% endif %}
+      </section>
+      <section class="content-card files-card">
+        <div class="records-heading"><div><h2>Patient files</h2><p>Files linked to patients from your appointments</p></div></div>
+        {% if medical_files %}
+          <div class="file-list">
+            {% for file in medical_files %}
+              <a class="file-row" href="{{ file.document.url }}" target="_blank" rel="noopener">
+                <span class="file-icon" aria-hidden="true">&#9776;</span>
+                <span><strong>{{ file.patient.user.get_full_name|default:file.patient.user.username }}</strong><small>{{ file.get_file_type_display }} · Uploaded {{ file.uploaded_at|date:"M j, Y" }}</small></span>
+                <span class="file-open">Open file &rarr;</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted-copy">There are no uploaded patient files linked to your appointments.</p>
+        {% endif %}
+      </section>
+
+    {% else %}
+      <section class="section-banner">
+        <div><h1>Availability</h1><p>Set the hours patients can book with you</p></div>
+        <span class="banner-note">{{ doctor.hospital.name }}</span>
+      </section>
+      <form class="content-card availability-card" method="post">
+        {% csrf_token %}
+        {{ availability_formset.management_form }}
+        <div class="availability-intro"><div><h2>Weekly schedule</h2><p>Set one or more appointment windows. Remove rows for hours you no longer offer.</p></div></div>
+        {% for form in availability_formset %}
+          {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+          <div class="availability-row{% if form.DELETE.value %} availability-deleted{% endif %}">
+            <div class="availability-day">{{ form.day }}{% for error in form.day.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+            <label class="time-field"><span>From</span>{{ form.start_time }}{% for error in form.start_time.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+            <label class="time-field"><span>To</span>{{ form.end_time }}{% for error in form.end_time.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+            <label class="time-field slot-field"><span>Slot (min)</span>{{ form.slot_duration }}{% for error in form.slot_duration.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+            {% if form.instance.pk %}<label class="remove-field">{{ form.DELETE }} Remove{% for error in form.DELETE.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>{% endif %}
+          </div>
+        {% empty %}
+          <div class="empty-state"><h2>No weekly hours set</h2><p>Use the empty row below to add your first schedule.</p></div>
+        {% endfor %}
+        {% if availability_formset.non_form_errors %}<div class="form-errors">{{ availability_formset.non_form_errors }}</div>{% endif %}
+        <div class="availability-actions"><p>Save your changes to update your public booking hours.</p><button class="accept-button" type="submit">Save availability</button></div>
+      </form>
+    {% endif %}
+  </main>
+
+  <footer class="portal-footer">
+    <div class="footer-links"><a href="{% url 'landing' %}">About us</a><a href="{% url 'landing' %}">Privacy policy</a><a href="{% url 'landing' %}">Terms &amp; conditions</a></div>
+    <span>© {% now "Y" %} Hospital Schedule · Doctor workspace</span>
+  </footer>
+</body>
+</html>

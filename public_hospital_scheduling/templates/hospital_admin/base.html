@@ -1,0 +1,98 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}Admin dashboard{% endblock %} · Hospital Schedule</title>
+  <link rel="stylesheet" href="{% static 'css/hospital_admin.css' %}">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{% url 'admin-dashboard' %}">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span class="brand-copy"><strong>CareBoard</strong><small>HOSPITAL ADMIN</small></span>
+      </a>
+
+      <nav class="side-nav" aria-label="Admin navigation">
+        <span class="nav-label">WORKSPACE</span>
+        <a class="nav-link{% if request.resolver_match.url_name == 'admin-dashboard' %} active{% endif %}" href="{% url 'admin-dashboard' %}">
+          <span class="nav-icon" aria-hidden="true">&#9632;</span> Overview
+        </a>
+        {% if perms.doctors.view_doctor or perms.doctors.add_doctor %}
+          <a class="nav-link{% if request.resolver_match.url_name == 'admin-doctors' or request.resolver_match.url_name == 'admin-doctor-add' %} active{% endif %}" href="{% url 'admin-doctors' %}">
+            <span class="nav-icon" aria-hidden="true">&#9823;</span> Doctors
+          </a>
+        {% endif %}
+        {% if perms.appointments.view_appointment %}
+          <a class="nav-link" href="{% url 'admin:appointments_appointment_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9638;</span> Appointments
+          </a>
+        {% endif %}
+        {% if perms.doctors.view_availability or perms.doctors.add_availability or perms.doctors.change_availability %}
+          <a class="nav-link" href="{% url 'admin:doctors_availability_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9719;</span> Schedules
+          </a>
+        {% endif %}
+        {% if perms.hospitals.view_hospital %}
+          <a class="nav-link" href="{% url 'admin:hospitals_hospital_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#8962;</span> Hospitals
+          </a>
+        {% endif %}
+
+        <span class="nav-label nav-label-spaced">SYSTEM TOOLS</span>
+        {% if perms.accounts.view_user %}
+          <a class="nav-link" href="{% url 'admin:accounts_user_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9787;</span> User accounts
+          </a>
+        {% endif %}
+        {% if perms.patients.view_patient %}
+          <a class="nav-link" href="{% url 'admin:patients_patient_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9822;</span> Patients
+          </a>
+        {% endif %}
+        {% if perms.files.view_medicalfile %}
+          <a class="nav-link" href="{% url 'admin:files_medicalfile_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9776;</span> Files
+          </a>
+        {% endif %}
+        {% if perms.doctors.view_doctor or perms.appointments.view_appointment or perms.hospitals.view_hospital %}
+          <a class="nav-link" href="{% url 'admin:doctors_doctor_changelist' %}">
+            <span class="nav-icon" aria-hidden="true">&#9881;</span> Advanced admin
+          </a>
+        {% endif %}
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar">{{ request.user.first_name|default:request.user.username|slice:":1"|upper }}</div>
+        <div class="user-copy"><strong>{{ request.user.get_full_name|default:request.user.username }}</strong><small>Administrator</small></div>
+        <a class="logout-link" href="{% url 'admin:logout' %}" aria-label="Log out">↗</a>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs">Hospital Schedule <span>/</span> Admin workspace</div>
+        <div class="topbar-right">
+          <span class="secure-label"><span class="secure-dot"></span> Secure workspace</span>
+          <span class="topbar-date">{% now "D, M j" %}</span>
+        </div>
+      </header>
+
+      <main class="page-content">
+        {% if messages %}
+          <div class="message-stack">
+            {% for message in messages %}
+              <div class="notice notice-{{ message.tags }}" role="status">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+        <footer class="page-footer">CareBoard <span>·</span> Hospital operations</footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
