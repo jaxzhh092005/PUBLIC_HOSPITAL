@@ -46,7 +46,7 @@ def doctor_list(request):
             )
         searched = bool(q or specialty)
 
-    paginator = Paginator(doctors, 6)
+    paginator = Paginator(doctors, 4)
     page_obj = paginator.get_page(request.GET.get("page"))
     page_links = [
         {

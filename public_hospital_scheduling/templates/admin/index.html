@@ -1,0 +1,109 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block bodyclass %}{{ block.super }} dashboard hospital-dashboard{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<main class="admin-dashboard">
+  <section class="dashboard-hero">
+    <div>
+      <p class="dashboard-eyebrow">{% translate "Hospital management" %}</p>
+      <h1>{% translate "Operations dashboard" %}</h1>
+      <p class="dashboard-intro">{% translate "Manage your care team, appointments, facilities, and patient services from one place." %}</p>
+    </div>
+    {% if perms.doctors.add_doctor %}
+      <a class="dashboard-primary-action" href="{% url 'admin:doctors_doctor_add' %}">
+        <span aria-hidden="true">+</span>
+        {% translate "Add a doctor" %}
+      </a>
+    {% elif perms.doctors.view_doctor %}
+      <a class="dashboard-primary-action" href="{% url 'admin:doctors_doctor_changelist' %}">
+        {% translate "Manage doctors" %}
+      </a>
+    {% endif %}
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="quick-actions-heading">
+    <div class="dashboard-section-heading">
+      <div>
+        <p class="dashboard-eyebrow">{% translate "Get started" %}</p>
+        <h2 id="quick-actions-heading">{% translate "Quick actions" %}</h2>
+      </div>
+    </div>
+    <div class="dashboard-quick-grid">
+      {% if perms.doctors.add_doctor %}
+        <a class="dashboard-quick-card" href="{% url 'admin:doctors_doctor_add' %}">
+          <span class="dashboard-card-icon doctor-icon" aria-hidden="true">+</span>
+          <span class="dashboard-card-title">{% translate "Add a doctor" %}</span>
+          <span class="dashboard-card-copy">{% translate "Create a doctor profile and assign a hospital." %}</span>
+          <span class="dashboard-card-link">{% translate "Create profile" %} <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      {% endif %}
+      {% if perms.doctors.view_availability or perms.doctors.add_availability or perms.doctors.change_availability %}
+        <a class="dashboard-quick-card" href="{% url 'admin:doctors_availability_changelist' %}">
+          <span class="dashboard-card-icon schedule-icon" aria-hidden="true">&#9719;</span>
+          <span class="dashboard-card-title">{% translate "Doctor schedules" %}</span>
+          <span class="dashboard-card-copy">{% translate "Set weekly availability and appointment slots." %}</span>
+          <span class="dashboard-card-link">{% translate "Manage schedules" %} <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      {% endif %}
+      {% if perms.appointments.view_appointment or perms.appointments.change_appointment or perms.appointments.add_appointment %}
+        <a class="dashboard-quick-card" href="{% url 'admin:appointments_appointment_changelist' %}">
+          <span class="dashboard-card-icon appointment-icon" aria-hidden="true">&#10003;</span>
+          <span class="dashboard-card-title">{% translate "Appointments" %}</span>
+          <span class="dashboard-card-copy">{% translate "Review requests and update appointment status." %}</span>
+          <span class="dashboard-card-link">{% translate "View appointments" %} <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      {% endif %}
+      {% if perms.accounts.add_user %}
+        <a class="dashboard-quick-card" href="{% url 'admin:accounts_user_add' %}">
+          <span class="dashboard-card-icon account-icon" aria-hidden="true">&#43;</span>
+          <span class="dashboard-card-title">{% translate "Create an account" %}</span>
+          <span class="dashboard-card-copy">{% translate "Add staff, doctor, nurse, or patient accounts." %}</span>
+          <span class="dashboard-card-link">{% translate "Add account" %} <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      {% endif %}
+      {% if perms.hospitals.view_hospital or perms.hospitals.add_hospital or perms.hospitals.change_hospital %}
+        <a class="dashboard-quick-card" href="{% url 'admin:hospitals_hospital_changelist' %}">
+          <span class="dashboard-card-icon hospital-icon" aria-hidden="true">+</span>
+          <span class="dashboard-card-title">{% translate "Hospitals" %}</span>
+          <span class="dashboard-card-copy">{% translate "Manage facilities and their contact details." %}</span>
+          <span class="dashboard-card-link">{% translate "Manage hospitals" %} <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="management-heading">
+    <div class="dashboard-section-heading">
+      <div>
+        <p class="dashboard-eyebrow">{% translate "Administration" %}</p>
+        <h2 id="management-heading">{% translate "Manage everything" %}</h2>
+      </div>
+      <p class="dashboard-section-note">{% translate "Available tools are based on your account permissions." %}</p>
+    </div>
+    <div class="dashboard-management-grid">
+      {% for app in app_list %}
+        {% for model in app.models %}
+          <article class="dashboard-management-card">
+            <p class="dashboard-app-name">{{ app.name }}</p>
+            <h3>{{ model.name }}</h3>
+            <div class="dashboard-model-actions">
+              {% if model.admin_url %}
+                <a href="{{ model.admin_url }}">{% translate "Manage" %}</a>
+              {% endif %}
+              {% if model.add_url %}
+                <a class="dashboard-add-link" href="{{ model.add_url }}">{% translate "Add new" %}</a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      {% empty %}
+        <p class="dashboard-empty">{% translate "You do not have permission to manage any items yet." %}</p>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

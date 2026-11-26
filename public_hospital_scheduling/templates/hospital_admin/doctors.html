@@ -1,0 +1,61 @@
+{% extends "hospital_admin/base.html" %}
+
+{% block title %}Doctors{% endblock %}
+
+{% block content %}
+<section class="welcome-row">
+  <div>
+    <p class="eyebrow">CARE TEAM</p>
+    <h1>Doctors</h1>
+    <p class="page-subtitle">Manage doctor profiles, specialties, and hospital assignments.</p>
+  </div>
+  {% if perms.doctors.add_doctor and perms.accounts.add_user %}
+    <a class="button button-primary" href="{% url 'admin-doctor-add' %}"><span aria-hidden="true">+</span> Add doctor</a>
+  {% endif %}
+</section>
+
+<section class="panel directory-panel">
+  <div class="directory-toolbar">
+    <div><h2>Doctor directory</h2><p>{{ page_obj.paginator.count }} doctor{{ page_obj.paginator.count|pluralize }}</p></div>
+    <form class="search-form" method="get">
+      <label class="sr-only" for="doctor-search">Search doctors</label>
+      <span aria-hidden="true">&#9906;</span>
+      <input id="doctor-search" name="q" value="{{ search }}" type="search" placeholder="Search name, specialty, hospital">
+      {% if search %}<a href="{% url 'admin-doctors' %}" class="clear-search">Clear</a>{% endif %}
+    </form>
+  </div>
+  {% if page_obj.object_list %}
+    <div class="table-wrap">
+      <table class="data-table doctor-table">
+        <thead><tr><th>Doctor</th><th>Specialty</th><th>Hospital</th><th>License number</th></tr></thead>
+        <tbody>
+          {% for doctor in page_obj %}
+            <tr>
+              <td><div class="doctor-cell"><span class="doctor-avatar">{{ doctor.user.first_name|default:doctor.user.username|slice:":1"|upper }}</span><span><strong>Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</strong><small>{{ doctor.user.email|default:"No email added" }}</small></span></div></td>
+              <td>{{ doctor.specialization }}</td>
+              <td>{{ doctor.hospital.name }}</td>
+              <td><span class="license-number">{{ doctor.license_number }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="pagination" aria-label="Doctor pages">
+        {% if page_obj.has_previous %}<a href="?q={{ search|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?q={{ search|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="empty-directory">
+      <span class="empty-directory-icon" aria-hidden="true">&#9823;</span>
+      <h3>{% if search %}No doctors found{% else %}No doctors added yet{% endif %}</h3>
+      <p>{% if search %}Try a different search term.{% else %}Add your first doctor to start building your care team.{% endif %}</p>
+      {% if not search and perms.doctors.add_doctor and perms.accounts.add_user %}
+        <a class="button button-primary" href="{% url 'admin-doctor-add' %}">Add your first doctor</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

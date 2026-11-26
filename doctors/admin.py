@@ -15,3 +15,4 @@ class AvailabilityAdmin(admin.ModelAdmin):
     list_display = ("doctor", "day", "start_time", "end_time", "slot_duration")
     list_filter = ("day", "doctor__hospital")
     search_fields = ("doctor__user__username", "doctor__user__first_name", "doctor__user__last_name")
+

@@ -1,0 +1,65 @@
+{% extends "hospital_admin/base.html" %}
+
+{% block title %}Add doctor{% endblock %}
+
+{% block content %}
+<section class="welcome-row">
+  <div>
+    <p class="eyebrow">CARE TEAM / NEW PROFILE</p>
+    <h1>Add a doctor</h1>
+    <p class="page-subtitle">Create a doctor account and assign their hospital and specialty.</p>
+  </div>
+  <a class="button button-secondary" href="{% url 'admin-doctors' %}">Back to doctors</a>
+</section>
+
+<form class="panel doctor-form" method="post" novalidate>
+  {% csrf_token %}
+  <div class="form-section-heading"><span class="form-step">01</span><div><h2>Personal details</h2><p>Enter the doctor's name and contact email.</p></div></div>
+  <div class="form-grid">
+    {% for field in form %}
+      {% if field.name == "first_name" or field.name == "last_name" or field.name == "email" %}
+        <div class="form-field{% if field.name == 'email' %} form-field-wide{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>
+          {{ field }}
+          {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="form-section-heading"><span class="form-step">02</span><div><h2>Professional details</h2><p>Set the doctor's hospital, specialty, and license details.</p></div></div>
+  <div class="form-grid">
+    {% for field in form %}
+      {% if field.name == "hospital" or field.name == "specialization" or field.name == "license_number" %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>
+          {{ field }}
+          {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="form-section-heading"><span class="form-step">03</span><div><h2>Account access</h2><p>This login will be assigned the Doctor role.</p></div></div>
+  <div class="form-grid">
+    {% for field in form %}
+      {% if field.name == "username" or field.name == "password" or field.name == "password_confirm" %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>
+          {{ field }}
+          {% if field.name == "password" %}<small class="field-help">Use a strong password that isn't used elsewhere.</small>{% endif %}
+          {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="notice notice-error">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+  {% endif %}
+  <div class="form-actions">
+    <a class="button button-secondary" href="{% url 'admin-doctors' %}">Cancel</a>
+    <button class="button button-primary" type="submit">Create doctor profile</button>
+  </div>
+</form>
+{% endblock %}
