@@ -1,0 +1,36 @@
+{% extends "page/base.html" %}
+{% load static %}
+{% block title %}Reschedule Appointment{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'appointments/css/appointments.css' %}">
+  <link rel="stylesheet" href="{% static 'bookings/css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrap">
+  <a href="{% url 'bookings:detail' a.pk %}" class="back-link">
+    <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to appointment
+  </a>
+  <h1 class="review-title">Reschedule Appointment</h1>
+  <section class="review-card">
+    <h3>Current Appointment</h3>
+    <p>{{ a.specialization }} on {{ a.appointment_date|date:"F j, Y" }}</p>
+    {% if available_days %}
+      <p>Available weekdays: {{ available_days|join:", " }}</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
+          {{ form.date }}
+          {% for error in form.date.errors %}
+            <p class="field-error" role="alert">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-sm">Save new date</button>
+      </form>
+    {% else %}
+      <p role="alert">No dates are available for this doctor's current schedule.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
@@ -20,6 +21,9 @@ class HomePageTests(TestCase):
         self.assertContains(response, reverse("files:list"))
 
     def test_next_saves_appointment_type_and_opens_step_one(self):
+        user = get_user_model().objects.create_user(username="patient")
+        self.client.force_login(user)
+
         response = self.client.post(
             reverse("home:home"),
             {"appointment_type": "clinical"},

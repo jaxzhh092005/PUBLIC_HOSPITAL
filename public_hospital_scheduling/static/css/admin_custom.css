@@ -23,7 +23,7 @@
   --default-button-hover-bg: #065a4f;
 }
 
-#site-name a { display: flex; align-items: center; gap: 10px; }
+#site-name a {color:#e3ece9; display: flex; align-items: center; gap: 10px; }
 #site-name img { background: #fff; border-radius: 6px; padding: 2px; }
 
 #header { box-shadow: 0 3px 8px rgba(0, 0, 0, .18); }

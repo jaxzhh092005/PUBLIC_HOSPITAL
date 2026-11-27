@@ -31,4 +31,4 @@
   </form>
 {% endblock %}
 
-{% block footer_left %}Don't have an account? <a href="{% url 'signin:signup' %}">Sign up</a>{% endblock %}
+{% block footer_left %}Don't have an account? <a href="{% url 'signin:signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign up</a>{% endblock %}

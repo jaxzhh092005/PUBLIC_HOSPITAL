@@ -60,7 +60,9 @@
 
     <div class="actions">
       <a href="{% url 'bookings:detail' a.pk %}" class="btn btn-sm">See Appointment</a>
-      <a href="#" class="reschedule">Reschedule</a>
+      {% if a.appointment_date >= today and a.status != "cancelled" %}
+        <a href="{% url 'bookings:reschedule' a.pk %}" class="reschedule">Reschedule</a>
+      {% endif %}
     </div>
   </article>
   {% empty %}

@@ -63,17 +63,40 @@
             <option value="Nephrology">Urology</option>
         </select>
 
-    </form>
-
 <script>
+const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+const doctorListPath = "{% url 'doctors:list' %}";
+const loginUrl = "{% url 'signin:login' %}";
+
+function openDoctorResults(destination) {
+    if (isAuthenticated) {
+        window.location.href = destination;
+        return;
+    }
+
+    const destinationUrl = new URL(destination, window.location.origin);
+    const next = destinationUrl.pathname + destinationUrl.search + destinationUrl.hash;
+    const loginParams = new URLSearchParams({ next });
+    window.location.href = loginUrl + "?" + loginParams.toString();
+}
+
 document.getElementById("specialty").addEventListener("change", function() {
     if (!this.value) return;
     const params = new URLSearchParams({ specialty: this.value });
-    window.location.href = "{% url 'doctors:list' %}?" + params.toString();
+    openDoctorResults(doctorListPath + "?" + params.toString());
+});
+
+document.addEventListener("click", event => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const link = target.closest('a[href^="' + doctorListPath + '"]');
+    if (!link || isAuthenticated) return;
+
+    event.preventDefault();
+    openDoctorResults(link.href);
 });
 </script>
-
-
     </form>
 
         <a class="help" href="#">Need Help?</a>
@@ -133,38 +156,6 @@ document.getElementById("specialty").addEventListener("change", function() {
       </ul>
     </section>
 
-    <!-- Bridge the gap -->
-    <section class="section center" aria-labelledby="gap-title">
-      <h2 id="gap-title">We're bridging the gap between Doctors and Patients</h2>
-      <p class="sub">You'll never miss another Doctor's appointment!</p>
-
-      <h3 class="online">Doctors Online Now</h3>
-      <ul class="docs">
-        <li class="doc">
-          <span class="avatar" aria-hidden="true">MN</span>
-          <div><p class="name">Dr Marie Concepcion Naranja</p><p class="spec">Family medicine</p></div>
-          <a class="btn btn-sm" href="#">CONSULT NOW</a>
-        </li>
-        <li class="doc">
-          <span class="avatar" aria-hidden="true">VC</span>
-          <div><p class="name">Dr Vicente Mikhail Cano</p><p class="spec">Cardiology</p></div>
-          <a class="btn btn-sm" href="#">CONSULT NOW</a>
-        </li>
-        <li class="doc">
-          <span class="avatar" aria-hidden="true">GG</span>
-          <div><p class="name">Dr Godwin Grata</p><p class="spec">Pediatrics</p></div>
-          <a class="btn btn-sm" href="#">CONSULT NOW</a>
-        </li>
-        <li class="doc" id="moreDoctors" hidden style="display: none;">
-          <span class="avatar" aria-hidden="true">AS</span>
-          <div><p class="name">Dr Andrea Santos</p><p class="spec">Neurology</p></div>
-          <a class="btn btn-sm" href="#">CONSULT NOW</a>
-        </li>
-      </ul>
-      <button class="btn btn-sm btn-more" id="toggleDoctors" type="button"
-              aria-controls="moreDoctors" aria-expanded="false">VIEW MORE DOCTORS</button>
-    </section>
-
     <!-- Hospitals -->
     <section class="section" aria-labelledby="hosp-title">
       <h2 id="hosp-title">Hospitals near you</h2>
@@ -205,17 +196,5 @@ document.getElementById("specialty").addEventListener("change", function() {
       </ul>
     </div>
   </footer>
-  <script>
-    const moreDoctors = document.getElementById("moreDoctors");
-    const toggleDoctors = document.getElementById("toggleDoctors");
-
-    toggleDoctors.addEventListener("click", () => {
-      const showMore = moreDoctors.hidden;
-      moreDoctors.hidden = !showMore;
-      moreDoctors.style.display = showMore ? "grid" : "none";
-      toggleDoctors.setAttribute("aria-expanded", showMore);
-      toggleDoctors.textContent = showMore ? "SHOW FEWER DOCTORS" : "VIEW MORE DOCTORS";
-    });
-  </script>
 </body>
 </html>

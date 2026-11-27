@@ -1,9 +1,12 @@
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
 User = get_user_model()
@@ -50,6 +53,7 @@ def login_view(request):
 
 def signup_view(request):
     error = None
+    next_url = request.POST.get("next") or request.GET.get("next", "")
     if request.method == "POST":
         first = request.POST.get("first_name", "").strip()
         last = request.POST.get("last_name", "").strip()
@@ -67,8 +71,11 @@ def signup_view(request):
                 username=email, email=email, password=password,
                 first_name=first, last_name=last,
             )
-            return redirect("signin:login")
-    return render(request, "signin/signup.html", {"error": error})
+            login_url = reverse("signin:login")
+            if next_url:
+                login_url = f"{login_url}?{urlencode({'next': next_url})}"
+            return redirect(login_url)
+    return render(request, "signin/signup.html", {"error": error, "next": next_url})
 
 
 def forgot_password_view(request):
