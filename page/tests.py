@@ -1,21 +1,20 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
 
 class LandingPageTests(TestCase):
-    def test_view_more_doctors_control_and_extra_doctor_are_rendered(self):
+    def test_online_doctors_section_is_not_rendered(self):
         response = self.client.get(reverse("landing"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f'<a class="logo" href="{reverse("landing")}"')
-        self.assertContains(response, 'id="toggleDoctors" type="button"')
-        self.assertContains(response, 'aria-controls="moreDoctors" aria-expanded="false"')
-        self.assertContains(response, '<li class="doc" id="moreDoctors" hidden style="display: none;">')
-        self.assertContains(response, 'moreDoctors.style.display = showMore ? "grid" : "none";')
-        self.assertContains(response, "Dr Andrea Santos")
-        self.assertContains(response, "SHOW FEWER DOCTORS")
+        self.assertNotContains(response, "Doctors Online Now")
+        self.assertNotContains(response, "CONSULT NOW")
+        self.assertNotContains(response, "moreDoctors")
+        self.assertNotContains(response, "toggleDoctors")
 
-    def test_specialty_cards_link_to_public_doctor_list_with_mapped_specialty(self):
+    def test_specialty_cards_link_to_doctor_list_with_mapped_specialty(self):
         response = self.client.get(reverse("landing"))
 
         self.assertEqual(response.status_code, 200)
@@ -38,8 +37,7 @@ class LandingPageTests(TestCase):
                 response,
                 f'href="{doctor_list_url}?specialty={specialty}"',
             )
-
-    def test_specialty_dropdown_links_to_public_doctor_specialty_filters(self):
+    def test_specialty_dropdown_requires_login_before_searching(self):
         response = self.client.get(reverse("landing"))
 
         for option in (
@@ -54,10 +52,20 @@ class LandingPageTests(TestCase):
             'value="Nephrology"',
         ):
             self.assertContains(response, f"<option {option}")
-        self.assertContains(
-            response,
-            'window.location.href = "{}?"'.format(reverse("doctors:list")),
-        )
+        self.assertContains(response, f'const doctorListPath = "{reverse("doctors:list")}"')
+        self.assertContains(response, f'const loginUrl = "{reverse("signin:login")}"')
+        self.assertContains(response, 'document.addEventListener("click"')
+        self.assertContains(response, "target.closest('a[href^=\"' + doctorListPath + '\"]')")
+        self.assertContains(response, "new URLSearchParams({ next })")
+        self.assertContains(response, "const isAuthenticated = false")
+
+    def test_authenticated_specialty_dropdown_skips_login(self):
+        user = get_user_model().objects.create_user(username="patient")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("landing"))
+
+        self.assertContains(response, "const isAuthenticated = true")
 
     def test_common_condition_cards_link_to_related_doctor_specialties(self):
         response = self.client.get(reverse("landing"))

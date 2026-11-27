@@ -3,8 +3,9 @@ from datetime import date
 import os
 import uuid
 
-from django.core.files.storage import default_storage
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import redirect, render
 
@@ -23,6 +24,7 @@ def _context(number, **extra):
     }
 
 
+@login_required(login_url="signin:login")
 def step1(request):
     initial = {"specialization": request.session.get("specialization", "")}
     form = SpecializationForm(request.POST or None, initial=initial)
@@ -34,6 +36,7 @@ def step1(request):
     return render(request, "appointments/step1.html", _context(1, form=form))
 
 
+@login_required(login_url="signin:login")
 def step2(request):
     # Steps must be done in order: send the patient back if step 1 is missing.
     if not request.session.get("specialization"):
@@ -50,6 +53,7 @@ def step2(request):
     return render(request, "appointments/step2.html", _context(2, form=form))
 
 
+@login_required(login_url="signin:login")
 def step3(request):
     if not request.session.get("appointment_date"):
         return redirect("appointments:step2")
@@ -69,6 +73,7 @@ def step3(request):
     return render(request, "appointments/step3.html", _context(3, form=form))
 
 
+@login_required(login_url="signin:login")
 def step4(request):
     if not request.session.get("patient_info"):
         return redirect("appointments:step3")
@@ -96,6 +101,7 @@ def step4(request):
 SESSION_KEYS = ("specialization", "appointment_date", "patient_info", "valid_id")
 
 
+@login_required(login_url="signin:login")
 def step5(request):
     spec = request.session.get("specialization")
     appt_date = request.session.get("appointment_date")

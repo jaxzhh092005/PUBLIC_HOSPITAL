@@ -10,6 +10,7 @@
 
   <form method="post" class="auth__form">
     {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     <div class="field">
       <label for="first_name">First Name</label>
       <input type="text" id="first_name" name="first_name" placeholder="enter your first name" required>
@@ -37,4 +38,4 @@
   </form>
 {% endblock %}
 
-{% block footer_left %}Already have an account? <a href="{% url 'signin:login' %}">Log in</a>{% endblock %}
+{% block footer_left %}Already have an account? <a href="{% url 'signin:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in</a>{% endblock %}

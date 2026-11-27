@@ -42,6 +42,47 @@ class SigninPageTests(TestCase):
         self.assertContains(response, "Schedule Your Appointment")
         self.assertTrue(response.wsgi_request.user.is_authenticated)
 
+    def test_signin_returns_to_safe_next_url(self):
+        user_model = get_user_model()
+        user_model.objects.create_user(
+            username="user@example.com",
+            email="user@example.com",
+            password="secret123",
+        )
+        next_url = f'{reverse("doctors:list")}?specialty=Cardiology'
+
+        response = self.client.post(reverse("signin:login"), {
+            "email": "user@example.com",
+            "password": "secret123",
+            "next": next_url,
+        })
+
+        self.assertRedirects(response, next_url, fetch_redirect_response=False)
+
+    def test_signup_preserves_destination_through_login(self):
+        next_url = f'{reverse("doctors:list")}?specialty=Cardiology'
+
+        signup_page = self.client.get(
+            reverse("signin:signup"),
+            {"next": next_url},
+        )
+        self.assertContains(signup_page, 'name="next"')
+        self.assertContains(signup_page, "Log in</a>")
+
+        response = self.client.post(reverse("signin:signup"), {
+            "first_name": "Test",
+            "last_name": "Patient",
+            "email": "new-patient@example.com",
+            "password": "secret123",
+            "next": next_url,
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            f'{reverse("signin:login")}?next=%2Fdoctors%2F%3Fspecialty%3DCardiology',
+        )
+
     def test_invalid_email_formats_show_an_error(self):
         requests = (
             (
